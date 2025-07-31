@@ -1,0 +1,50 @@
+# Logs
+
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node modules (both client and server)
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build outputs
+dist/
+client/dist/
+server/dist/
+dist-ssr/
+
+
+# Local env files
+*.local
+client/.env
+server/.env
+
+# OS + Editor junk
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# IDE/project-specific
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Misc
+*.bak
+*.tmp
+*.swp
+*.orig
+*.pid
+*.seed
+
+# Environment variables
+.env
