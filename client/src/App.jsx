@@ -1,34 +1,43 @@
-import icon from "../src/assets/youtube-icons/yt_red.png";
+import { Outlet, useLocation } from "react-router-dom";
 
-function App() {
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar.jsx";
+import MiniSidebar from "./components/MiniSidebar.jsx";
+import "./index.css";
+import { useState } from "react";
+
+export default function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const location = useLocation();
+
+  const isActivePath = (path, exact = false) => {
+    return exact
+      ? location.pathname === path
+      : location.pathname.startsWith(path);
+  };
+
   return (
-    <div className="min-h-screen bg-white text-gray-800">
-      <div className="bg-[#ffd199] border-b border-yellow-300 text-[#663800] p-4 flex items-center justify-center gap-3 shadow-sm">
-        <img src={icon} alt="YouTube icon" className="w-12" />
-        <div className="text-sm sm:text-base text-center">
-          <strong>Note:</strong> This YouTube Clone project is{" "}
-          <span className="font-semibold">under active development</span>.
-        </div>
-      </div>
+    <div className="min-h-full top-0 right-0 left-0.5 absolute  overflow-hidden  bg-white text-black ">
+      <Navbar onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-      <main className="flex flex-col items-center justify-center text-center p-10">
-        <img
-          src="../src/assets/youtube-logos/yt_red_black.png"
-          alt="YouTube Logo"
-          className="w-40 mt-10 opacity-80"
+      <div className="relative h-full">
+        <MiniSidebar
+          hideLabels={hideLabels}
+          handleLabels={handleLabels}
+          onClose={() => setIsSidebarOpen(false)}
         />
 
-        <h1 className="text-4xl sm:text-5xl font-bold text-red-600 mb-4">
-          YouTube Clone
-        </h1>
-        <p className="text-lg text-gray-600 max-w-xl">
-          Built using the MERN stack (MongoDB, Express, React, Node). Stay tuned
-          for full video experience and features like authentication, comments,
-          search, and more!
-        </p>
-      </main>
+        <main
+          className={`h-full ${
+            isActivePath("/", true) && isSidebarOpen
+              ? "md:pl-18 xl:pl-60"
+              : "md:pl-18"
+          } pt-14 px-3`}>
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
-
-export default App;

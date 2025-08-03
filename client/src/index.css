@@ -1,1 +1,52 @@
 @import "tailwindcss";
+
+body {
+  font-family: "Roboto", "Arial", sans-serif;
+  background-color: #f9f9f9;
+  overflow-y: scroll;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* background: transparent; */
+}
+
+.scroll-hover::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+  background: transparent;
+  scroll-behavior: smooth;
+}
+
+.scroll-hover::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-hover::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  background-clip: content-box;
+  border-top: 30px solid transparent;
+  border-bottom: 30px solid transparent;
+  height: 56px;
+
+}
+
+/* On hover of the container, thumb gets color */
+.scroll-hover:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.5);
+}
+
+/* Firefox support */
+.scroll-hover {
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
+
+.scroll-hover:hover {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
+}
+
+
