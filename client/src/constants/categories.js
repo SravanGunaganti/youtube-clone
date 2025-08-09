@@ -1,3 +1,4 @@
+  // categories of videos
   export const categories = [
     "All",
     "Gaming",

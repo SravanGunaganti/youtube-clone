@@ -1,6 +1,4 @@
 // src/utils/authUtils.js
-
-import {jwtDecode} from "jwt-decode";
 import api from "../api/axios";
 
 const TOKEN_KEY = "auth_token";
@@ -21,24 +19,17 @@ export const logoutUser = () => {
 };
 
 // Decode token and get user data (with expiry check)
-export const getUserFromToken = async() => {
+export const getUserFromToken = async () => {
   try {
     const token = getToken();
-    if (!token){
+    if (!token) {
       logoutUser();
       return null;
     }
 
-
-    // const decoded = jwtDecode(token);
-    // const isExpired = decoded.exp * 1000 < Date.now();
-    // if (isExpired) {
-    //   logoutUser();
-    //   return null;
-    // }
     const res = await api.get("/auth/verify");
-    
-    if (res.data.success){
+
+    if (res.data.success) {
       return res.data.data;
     }
     logoutUser();
