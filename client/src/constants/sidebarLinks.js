@@ -9,7 +9,7 @@ export const sidebarLinks = [
   {
     section: "Main",
     links: [
-      { to: "/", label: "Home", icon: IoMdHome },
+      // { to: "/", label: "Home", icon: IoMdHome },
       { to: "/shorts", label: "Shorts", icon: SiYoutubeshorts },
       { to: "/subscriptions", label: "Subscriptions", icon: MdSubscriptions },
     ],
