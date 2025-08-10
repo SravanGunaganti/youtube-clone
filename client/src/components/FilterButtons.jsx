@@ -42,7 +42,7 @@ const FilterButtons = ({ selectedCategory, onCategoryChange }) => {
             key={`catbtn${cat}`}
             onClick={() => onCategoryChange(cat)}
             ref={(el) => (itemRefs.current[cat] = el)}
-            className={`px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-colors duration-200 ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
               selectedCategory === cat
                 ? "bg-black text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"

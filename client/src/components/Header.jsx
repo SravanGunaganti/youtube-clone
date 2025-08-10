@@ -5,7 +5,6 @@ import EditProfileModal from "./EditProfileModal";
 import { NavContext } from "../App";
 import { useContext } from "react";
 import Overlay from "./Overlay";
-import { logoutUser } from "../utils/authUtils";
 import { AiOutlineBell } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { HiOutlineBars3 } from "react-icons/hi2";
@@ -20,7 +19,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const { showProfile, setShowProfile } = useContext(NavContext);
   const [avatarError, setAvatarError] = useState(false);
-  const { authUser } = useAuth();
+  const { authUser,logout } = useAuth();
   // console.log(authUser);
 
   // useNavigate hook to navigate
@@ -37,7 +36,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
 
   // function to handle sign out
   const handleSignOut = () => {
-    logoutUser();
+    logout();
     navigate("/signin");
   };
 

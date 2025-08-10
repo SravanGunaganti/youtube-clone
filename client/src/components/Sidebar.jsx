@@ -47,7 +47,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             onClick={onClose}
             className={`flex items-center gap-3 mb-1 w-[calc(100%-12px)] px-3 py-2 rounded-lg text-black ${
               isActivePath("/", true)
-                ? "bg-gray-100 hover:bg-gray-200"
+                ? "bg-gray-100 hover:bg-gray-200 font-medium"
                 : "hover:bg-gray-100"
             }`}>
             <IoMdHome className="w-6 h-6" />

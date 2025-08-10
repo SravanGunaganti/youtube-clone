@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getTimeAgo,formatNumber, getInitial } from "../utils/utilityFunctions";
+import {
+  getTimeAgo,
+  formatNumber,
+  getInitial,
+} from "../utils/utilityFunctions";
 import {
   FaPlay,
   FaPause,
@@ -20,9 +24,20 @@ import {
   FaEdit,
   FaTrash,
 } from "react-icons/fa";
-import { MdMoreVert, MdPause, MdPlayArrow, MdPlaylistAdd, MdReply } from "react-icons/md";
+import {
+  MdMoreVert,
+  MdPause,
+  MdPlayArrow,
+  MdPlaylistAdd,
+  MdReply,
+} from "react-icons/md";
 import { BiLike, BiDislike, BiShare, BiPause } from "react-icons/bi";
-import { RiDownloadLine, RiPauseLargeFill, RiPauseLargeLine, RiScissorsLine } from "react-icons/ri";
+import {
+  RiDownloadLine,
+  RiPauseLargeFill,
+  RiPauseLargeLine,
+  RiScissorsLine,
+} from "react-icons/ri";
 import { videoAPI, commentAPI, channelAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { PiPauseBold } from "react-icons/pi";
@@ -436,7 +451,11 @@ const VideoPlayer = () => {
                   <button
                     onClick={togglePlay}
                     className="hover:text-red-500 transition-colors">
-                    {isPlaying ? <MdPause size={30} /> : <BsPlayFill size={30} />}
+                    {isPlaying ? (
+                      <MdPause size={30} />
+                    ) : (
+                      <BsPlayFill size={30} />
+                    )}
                   </button>
 
                   <div className="flex items-center gap-2">
@@ -479,7 +498,7 @@ const VideoPlayer = () => {
           </div>
 
           {/* Video Info */}
-          <div className="mb-4">
+          <div className="">
             <h1 className="text-xl font-semibold mb-3 leading-tight">
               {videoData.title}
             </h1>
@@ -612,7 +631,7 @@ const VideoPlayer = () => {
           </div>
 
           {/* Channel Info */}
-          <div className="flex items-start justify-between py-4 border-b border-gray-200 mb-4">
+          <div className="flex bg-gray-100 items-start justify-between p-4 mb-4 rounded-lg border-b border-gray-200">
             <div className="flex items-start gap-3">
               <div className="flex-1">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -839,27 +858,33 @@ const VideoPlayer = () => {
               <h3 className="text-base font-medium mb-3">Up next</h3>
               <div className="space-y-2">
                 {suggestedVideos.map((video) => (
-                  <Link
-                    to={`/watch/${video.id}`}
+                  <div
                     key={video.id}
                     className="flex gap-2 p-2 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors group">
-                    <div className="relative flex-shrink-0">
-                      <img
-                        src={video.thumbnailUrl}
-                        alt={video.title}
-                        className="w-40 h-24 object-cover rounded-lg"
-                      />
-                      <span className="absolute bottom-1 right-1 bg-black/90 text-white text-xs px-1.5 py-0.5 rounded font-medium">
-                        {video?.duration}
-                      </span>
-                    </div>
+                    <Link to={`/watch/${video.id}`}>
+                      <div className="relative flex-shrink-0">
+                        <img
+                          src={video.thumbnailUrl}
+                          alt={video.title}
+                          className="w-40 h-24 object-cover rounded-lg"
+                        />
+
+                        <span className="absolute bottom-1 right-1 bg-black/90 text-white text-xs px-1.5 py-0.5 rounded font-medium">
+                          {video?.duration}
+                        </span>
+                      </div>
+                    </Link>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm leading-tight mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                        {video?.title}
-                      </h4>
-                      <p className="text-gray-600 text-xs mb-1 hover:text-gray-900 cursor-pointer transition-colors">
-                        {video?.channel?.name}
-                      </p>
+                      <Link to={`/watch/${video.id}`}>
+                        <h4 className="font-medium text-sm leading-tight mb-1 line-clamp-2 group-hover:text-gray-900 transition-colors">
+                          {video?.title}
+                        </h4>
+                      </Link>
+                      <Link to={`/channel/${video?.channel?.id}`}>
+                        <p className="text-gray-600 text-xs mb-1 hover:text-gray-900 cursor-pointer transition-colors">
+                          {video?.channel?.name}
+                        </p>
+                      </Link>
                       <div className="text-gray-500 text-xs">
                         <span>{formatNumber(video.views)} Views</span>
                         <span className="mx-1">•</span>
@@ -871,7 +896,7 @@ const VideoPlayer = () => {
                         <MdMoreVert size={16} className="text-gray-600" />
                       </button>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>
@@ -887,5 +912,4 @@ const VideoPlayer = () => {
   );
 };
 
-export default VideoPlayer; 
-  
+export default VideoPlayer;

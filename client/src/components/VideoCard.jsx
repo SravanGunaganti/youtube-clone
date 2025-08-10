@@ -84,20 +84,20 @@ const VideoCard = ({ video }) => {
 
         <div className="flex-1 min-w-0">
           {/* Title with link to watch */}
-          <Link to={`/watch/${video.id}`}>
-            <h3 className="text-base font-semibold  leading-[22px] text-gray-900 line-clamp-2 mb-1">
+          <Link to={`/watch/${video.id}` } className="block">
+            <h3 className="text-base font-medium  leading-[22px] text-gray-900 line-clamp-2 mb-1">
               {video.title}
             </h3>
           </Link>
 
           {/* Channel name with link */}
-          <div className="flex md:flex-col gap-1 md:items-start items-center text-xs text-gray-600">
+          <div className="flex text-xs sm:text-sm md:flex-col gap-1 md:items-start items-center text-gray-600">
             <Link to={`/channel/${video.channel.id}`}>
-              <p className="text-sm text-gray-600 font-medium hover:text-gray-900 cursor-pointer">
+              <p className=" text-gray-600 font-normal hover:text-gray-900 cursor-pointer">
                 {video.channel.name || "Unknown Channel"}
               </p>
             </Link>
-            <span className="text-sm">
+            <span className="">
               <span className="mx-1 md:hidden">•</span>
               <span>{formatNumber(video.views)} views</span>
               <span className="mx-1">•</span>
