@@ -3,7 +3,10 @@ import { useForm } from "react-hook-form";
 import { emailRegex, passwordRegex } from "../utils/validators";
 import { toast } from "react-toastify";
 import { userAPI } from "../services/api";
+import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 const SignUp = () => {
+  const { authUser } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -11,6 +14,13 @@ const SignUp = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
+
+   useEffect(() => {
+    if (authUser) {
+      navigate("/");
+    }
+  }, []);
+
   const onSubmit = async (data) => {
     try {
       const res = await userAPI.register({
@@ -33,6 +43,8 @@ const SignUp = () => {
       toast.error(errMsg);
     }
   };
+
+
   return (
     <div className="fixed inset-0  z-100 bg-gray-100 flex items-center justify-center ">
       <div className="bg-transparent w-full min-h-full max-h-full py-4 overflow-y-auto flex flex-col">

@@ -16,7 +16,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         text-gray-900  z-55 transform transition-transform ease-linear duration-200 ${
           isOpen
             ? "translate-x-0 block"
-            : isActivePath("/", true)
+            : !isActivePath("/watch/", true)
             ? "xl:hidden -translate-x-full xl:translate-0"
             : "-translate-x-full"
         }`}>
@@ -79,7 +79,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         </nav>
       </aside>
       {/* Overlay for smaller screens */}
-      <div className={isActivePath("/", true) ? "xl:hidden" : ""}>
+      <div className={!isActivePath("/watch/", true) ? "xl:hidden" : ""}>
         {isOpen && <Overlay />}
       </div>
     </>

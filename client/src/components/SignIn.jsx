@@ -2,9 +2,10 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { use, useEffect } from "react";
 
 const SignIn = () => {
-  const { login } = useAuth();
+  const { authUser,login } = useAuth();
   const navigate = useNavigate();
   const {
     register,
@@ -19,6 +20,12 @@ const SignIn = () => {
       toast.error(e?.message || "Login failed Try again!");
     }
   };
+
+  useEffect(() => {
+    if (authUser) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <div className="fixed inset-0  z-50 bg-gray-100 flex items-center justify-center ">
