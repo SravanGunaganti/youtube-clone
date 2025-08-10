@@ -6,10 +6,10 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   saveToken,
   getUserFromToken,
-  logoutUser,
   getToken,
+  removeToken,
 } from "../utils/authUtils";
-import { userAPI } from "../services/api";
+import { handleAPIError, userAPI } from "../services/api";
 import Loader from "../components/Loader";
 
 const AuthContext = createContext();
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
       const res = await userAPI.login({ email, password });
       const token = res.accessToken;
       if (token) {
-        logoutUser();
+        removeToken();
         saveToken(token);
         const userData = await getUserFromToken();
         if (!userData) {
@@ -53,14 +53,13 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (err) {
       console.log(err);
-      const message =
-        err?.response?.data?.error?.message || "Login failed. Try again!";
+      const message = handleAPIError(err).message || "Login failed. Try again!";
       throw new Error(message);
     }
   };
 
   const logout = () => {
-    logoutUser();
+    removeToken();
     setAuthUser(null);
     setIsLoggedIn(false);
   };
