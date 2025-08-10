@@ -3,6 +3,7 @@ import Channel from "../models/Channel.model.js";
 import { sendErrorResponse } from "../utils/sendErrorResponse.js";
 import { sendSuccessResponse } from "../utils/sendSuccessResponse.js";
 
+
 // Create a new video
 export const createVideo = async (req, res, next) => {
   try {
@@ -457,3 +458,28 @@ export const getVideosByChannel = async (req, res, next) => {
     next(error);
   }
 };
+
+// Check if video exists
+export const videoExists = async (req, res, next) => {
+  try {
+    const { videoId } = req.params;
+    const video = await Video.findById(videoId);
+    if (!video) {
+      return sendErrorResponse(
+        res,
+        404,
+        "Video Not Found",
+        "The requested video does not exist."
+      );
+    }
+    return sendSuccessResponse(
+      res,
+      200,
+      { exists: true },
+      "Video exists"
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+

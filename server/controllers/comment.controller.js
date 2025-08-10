@@ -92,7 +92,7 @@ export const getVideoComments = async (req, res, next) => {
 
     // Get comments
     const comments = await Comment.find({ videoId })
-      .populate("userId", "username")
+      .populate("userId", "username avatar")
       .sort({ timestamp: -1 });
 
     // Return comments
@@ -111,6 +111,7 @@ export const getVideoComments = async (req, res, next) => {
           user: {
             id: comment.userId._id,
             username: comment.userId.username,
+            avatar: comment.userId.avatar
           },
         })),
       },

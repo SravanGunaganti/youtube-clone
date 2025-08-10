@@ -103,7 +103,7 @@ export const loginUser = async (req, res, next) => {
 
 export const verifyUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user._id);
     if (!user) {
       return sendErrorResponse(
         res,
