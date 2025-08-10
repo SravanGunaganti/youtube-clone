@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
     setAuthUser(updatedUserData);
   };
 
-  if (loading) return <div className="flex min-h-[60vh] items-center justify-center"><Loader size="sm" /></div>;
+  if (loading) return <Loader size="lg" />;
 
   return (
     <AuthContext.Provider
