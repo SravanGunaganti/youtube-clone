@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken, logoutUser } from '../utils/authUtils';
+import { getToken, removeToken } from '../utils/authUtils';
 
 // Create axios instance with base configuration
 const API = axios.create({
@@ -31,7 +31,7 @@ API.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token expired or invalid
-      logoutUser();
+      removeToken();
       // localStorage.removeItem('user');
       window.location.href = '/signin';
     }
@@ -39,7 +39,7 @@ API.interceptors.response.use(
   }
 );
 
-// ============== CHANNEL APIs ==============
+//  CHANNEL APIs 
 
 export const channelAPI = {
   // Create a new channel
@@ -78,7 +78,7 @@ export const channelAPI = {
   },
 };
 
-// ============== VIDEO APIs ==============
+//  VIDEO APIs
 
 export const videoAPI = {
   // Create a new video
@@ -129,7 +129,7 @@ export const videoAPI = {
   
 };
 
-// ============== COMMENT APIs ==============
+//  COMMENT APIs
 
 export const commentAPI = {
   // Get comments for a video
@@ -161,7 +161,7 @@ export const commentAPI = {
   
 };
 
-// ============== USER APIs ==============
+//  USER APIs FOR AUTH AND PROFILE
 
 export const userAPI = {
   // Update user profile
@@ -184,7 +184,7 @@ export const userAPI = {
   },
 };
 
-// ============== UTILITY FUNCTIONS ==============
+// Error handling
 
 export const handleAPIError = (error) => {
   console.error('API Error:', error);
@@ -202,6 +202,7 @@ export const handleAPIError = (error) => {
   };
 };
 
+// Check if API response is successful
 export const isAPISuccess = (response) => {
   return response && response.success === true;
 };
