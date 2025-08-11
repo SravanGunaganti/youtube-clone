@@ -18,11 +18,11 @@ const channelSchema = new mongoose.Schema({
   },
   channelBanner: {
     type: String,
-    default: "https://images.unsplash.com/photo-1557683316-973673baf926?w=1200&h=300&fit=crop"
+    default: null
   },
   avatar: {
     type: String,
-    default: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face"
+    default: null
   },
   subscribers: {
     type: Number,

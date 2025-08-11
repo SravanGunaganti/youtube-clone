@@ -75,10 +75,12 @@ export const createVideo = async (req, res, next) => {
         channel: {
           id: video.channelId._id,
           name: video.channelId.channelName,
+          avatar: video.channelId.avatar,
         },
         uploader: {
           id: video.uploader._id,
           username: video.uploader.username,
+          avatar: video.uploader.avatar,
         },
         uploadDate: video.uploadDate,
         createdAt: video.createdAt,
@@ -133,11 +135,13 @@ export const getVideo = async (req, res, next) => {
           owner: {
             id: video.channelId.owner._id,
             username: video.channelId.owner.username,
+            avatar: video.channelId.owner.avatar,
           },
         },
         uploader: {
           id: video.uploader._id,
           username: video.uploader.username,
+          avatar: video.uploader.avatar,
         },
         uploadDate: video.uploadDate,
         comments: video.comments,
@@ -185,6 +189,7 @@ export const getAllVideos = async (req, res, next) => {
           uploader: {
             id: video.uploader._id,
             username: video.uploader.username,
+            avatar: video.uploader.avatar,
           },
           uploadDate: video.uploadDate,
         })),
@@ -258,6 +263,7 @@ export const updateVideo = async (req, res, next) => {
         uploader: {
           id: updatedVideo.uploader._id,
           username: updatedVideo.uploader.username,
+          avatar: updatedVideo.uploader.avatar,
         },
         uploadDate: updatedVideo.uploadDate,
         createdAt: updatedVideo.createdAt,
@@ -448,6 +454,7 @@ export const getVideosByChannel = async (req, res, next) => {
           uploader: {
             id: video.uploader._id,
             username: video.uploader.username,
+            avatar: video.uploader.avatar,
           },
           uploadDate: video.uploadDate,
         })),

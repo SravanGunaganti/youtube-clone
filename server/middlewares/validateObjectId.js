@@ -14,7 +14,6 @@ const fieldTexts = {
 export const validateObjectId = (field) => {
   return (req, res, next) => {
     const value = req.params?.[field];
-    console.log(value);
     
     // Check if the value is provided
     if (!value) {
@@ -27,7 +26,6 @@ export const validateObjectId = (field) => {
     }
     // Validate the ObjectId format
     if (!mongoose.Types.ObjectId.isValid(value)) {
-      console.log("Invalid ObjectId");
       return sendErrorResponse(
         res,
         400,

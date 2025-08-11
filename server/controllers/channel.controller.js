@@ -10,7 +10,8 @@ import { sendSuccessResponse } from "../utils/sendSuccessResponse.js";
 // Create a new channel
 export const createChannel = async (req, res, next) => {
   try {
-    const { channelName, description } = req.body;
+    const { channelName, description, avatar } = req.body;
+    console.log(req.body);
     const userId = req.user._id;
 
     // Check if user already has a channel
@@ -25,7 +26,7 @@ export const createChannel = async (req, res, next) => {
     }
 
     // Validate required fields
-    if (!channelName || !description) {
+    if (!channelName || !description || !avatar) {
       return sendErrorResponse(
         res,
         400,
@@ -39,7 +40,7 @@ export const createChannel = async (req, res, next) => {
       channelName: channelName.trim(),
       description: description.trim(),
       owner: userId,
-      channelBanner: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7piWAeCamJ_yKmGW90xWw3P6y7WlNRo9DVAxDWtakyjZP5cUziCwGk0ktcJBoQNtsBP8&usqp=CAU`,
+      avatar: avatar,
     });
 
     // Populate owner information
@@ -135,6 +136,12 @@ export const getMyChannel = async (req, res, next) => {
           "title thumbnailUrl uploader views likes dislikes uploadDate description",
         options: { sort: { uploadDate: -1 } },
       });
+    if (channel && channel.videos) {
+      channel.videos = channel.videos.map((video) => ({
+        ...video.toObject(),
+        id: video._id,
+      }));
+    }
 
     // Check if channel exists
     if (!channel) {
@@ -320,7 +327,6 @@ export const getAllChannels = async (req, res, next) => {
   }
 };
 
-
 // Check if channel exists
 export const channelExists = async (req, res, next) => {
   try {
@@ -334,14 +340,8 @@ export const channelExists = async (req, res, next) => {
         "The requested channel does not exist."
       );
     }
-    return sendSuccessResponse(
-      res,
-      200,
-      { exists: true , },
-      "Channel exists"
-    );
+    return sendSuccessResponse(res, 200, { exists: true }, "Channel exists");
   } catch (error) {
     next(error);
   }
 };
-
