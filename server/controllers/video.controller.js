@@ -98,7 +98,7 @@ export const getVideo = async (req, res, next) => {
     const { videoId } = req.params;
 
     const video = await Video.findById(videoId)
-      .populate("channelId", "channelName channelBanner owner")
+      .populate("channelId", "channelName channelBanner owner subscribers avatar isVerified")
       .populate("uploader", "username")
       .populate("channelId.owner", "username");
 
@@ -132,6 +132,10 @@ export const getVideo = async (req, res, next) => {
           id: video.channelId._id,
           name: video.channelId.channelName,
           banner: video.channelId.channelBanner,
+          avatar: video.channelId.avatar,
+          subscribers: video.channelId.subscribers,
+          isVerified: video.channelId.isVerified,
+
           owner: {
             id: video.channelId.owner._id,
             username: video.channelId.owner.username,
@@ -159,7 +163,7 @@ export const getVideo = async (req, res, next) => {
 export const getAllVideos = async (req, res, next) => {
   try {
     const videos = await Video.find()
-      .populate("channelId", "channelName avatar")
+      .populate("channelId", "channelName avatar isVerified")
       .populate("uploader", "username")
       .select(
         "title description thumbnailUrl videoUrl views likes uploadDate category"
@@ -185,6 +189,7 @@ export const getAllVideos = async (req, res, next) => {
             id: video.channelId._id,
             name: video.channelId.channelName,
             avatar: video.channelId.avatar,
+            isVerified: video.channelId.isVerified
           },
           uploader: {
             id: video.uploader._id,
@@ -238,7 +243,7 @@ export const updateVideo = async (req, res, next) => {
       },
       { new: true, runValidators: true }
     ).populate([
-      { path: 'channelId', select: 'channelName' },
+      { path: 'channelId', select: 'channelName avatar isVerified' },
       { path: 'uploader', select: 'username' }
     ]);
 
@@ -259,6 +264,8 @@ export const updateVideo = async (req, res, next) => {
         channel: {
           id: updatedVideo.channelId._id,
           name: updatedVideo.channelId.channelName,
+          avatar: updatedVideo.channelId.avatar,
+          isVerified: updatedVideo.channelId.isVerified
         },
         uploader: {
           id: updatedVideo.uploader._id,

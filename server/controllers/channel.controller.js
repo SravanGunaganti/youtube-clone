@@ -11,7 +11,6 @@ import { sendSuccessResponse } from "../utils/sendSuccessResponse.js";
 export const createChannel = async (req, res, next) => {
   try {
     const { channelName, description, avatar } = req.body;
-    console.log(req.body);
     const userId = req.user._id;
 
     // Check if user already has a channel
@@ -56,6 +55,7 @@ export const createChannel = async (req, res, next) => {
         channelBanner: channel.channelBanner,
         avatar: channel.avatar,
         subscribers: channel.subscribers,
+        isVerified: channel.isVerified,
         owner: {
           id: channel.owner._id,
           username: channel.owner.username,
@@ -107,6 +107,7 @@ export const getChannel = async (req, res, next) => {
         avatar: channel.avatar,
         subscribers: channel.subscribers,
         videoCount: channel.videos.length,
+        isVerified: channel.isVerified,
         owner: {
           id: channel.owner._id,
           username: channel.owner.username,
@@ -165,6 +166,7 @@ export const getMyChannel = async (req, res, next) => {
         subscribers: channel.subscribers,
         avatar: channel.avatar,
         videoCount: channel.videos.length,
+        isVerified: channel.isVerified,
         owner: {
           id: channel.owner._id,
           username: channel.owner.username,
@@ -233,6 +235,7 @@ export const updateChannel = async (req, res, next) => {
         subscribers: updatedChannel.subscribers,
         avatar: updatedChannel.avatar,
         videoCount: updatedChannel.videos.length,
+        isVerified: updatedChannel.isVerified,
         owner: {
           id: updatedChannel.owner._id,
           username: updatedChannel.owner.username,
@@ -341,6 +344,108 @@ export const channelExists = async (req, res, next) => {
       );
     }
     return sendSuccessResponse(res, 200, { exists: true }, "Channel exists");
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Toggle subscription status for a channel
+ * Subscribes the authenticated user to the specified channel if not already subscribed,
+ * or unsubscribes them if they are already subscribed.
+ */
+export const toggleSubscribe = async (req, res, next) => {
+  
+  
+  try {
+    const { channelId } = req.params;
+    const userId = req.user._id;
+
+    // 1. Find the channel
+    const channel = await Channel.findById(channelId)
+    if (!channel) {
+      return sendErrorResponse(
+        res,
+        404,
+        'Channel not found',
+        'The specified channel does not exist.'
+      );
+    }
+
+    // 2. Check if user is trying to subscribe to their own channel
+    if (channel.owner.toString() === userId.toString()) {
+      // await session.abortTransaction();
+      // session.endSession();
+      return sendErrorResponse(
+        res,
+        400,
+        'Invalid operation',
+        'You cannot subscribe to your own channel.'
+      );
+    }
+
+    // 3. Check if user is already subscribed
+    const isSubscribed = channel.subscribedBy.includes(userId);
+    
+      if (isSubscribed) {
+        // Remove like
+        channel.subscribedBy.pull(userId);
+        channel.subscribers = Math.max(0, channel.subscribers - 1);
+      } else {
+        // Add like
+        channel.subscribedBy.push(userId);
+        channel.subscribers += 1;
+      }
+      await channel.save();
+    // 5. Return updated subscription status
+    return sendSuccessResponse(
+      res,
+      200,
+      { 
+        isSubscribed: !isSubscribed, 
+        subscribers: channel.subscribers 
+      },
+      isSubscribed ? 'Unsubscribed successfully' : 'Subscribed successfully'
+    );
+  } catch (error) {
+    // await session.abortTransaction();
+    // session.endSession();
+    next(error);
+  }
+};
+
+/**
+ * Check if the authenticated user is subscribed to a channel
+ */
+export const checkSubscriptionStatus = async (req, res, next) => {
+  try {
+    const { channelId } = req.params;
+    const userId = req.user._id;
+
+    // 1. Find the channel
+    const channel = await Channel.findById(channelId);
+    if (!channel) {
+      return sendErrorResponse(
+        res,
+        404,
+        'Channel not found',
+        'The specified channel does not exist.'
+      );
+    }
+
+    // 2. Check if user is subscribed
+    const isSubscribed = channel.subscribedBy.includes(userId);
+    
+    // 3. Return subscription status
+    return sendSuccessResponse(
+      res,
+      200,
+      { 
+        isSubscribed,
+        subscribers: channel.subscribers 
+      },
+      'Subscription status retrieved successfully'
+    );
   } catch (error) {
     next(error);
   }

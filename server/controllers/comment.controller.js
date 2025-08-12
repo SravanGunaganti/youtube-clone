@@ -51,7 +51,7 @@ export const addComment = async (req, res, next) => {
     });
 
     // Populate user info
-    await comment.populate("userId", "username, avatar");
+    await comment.populate("userId", "username avatar");
 
 
     return sendSuccessResponse(

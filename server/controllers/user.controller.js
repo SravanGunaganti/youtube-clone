@@ -77,12 +77,14 @@ export const loginUser = async (req, res, next) => {
       id: user._id,
       username: user.username,
       email: user.email,
+      avatar: user.avatar,
     });
     const channel = await Channel.findOne({ owner: user._id });
     const data = {
       id: user._id,
       username: user.username,
       email: user.email,
+      avatar: user.avatar,
     };
 
     if (channel) {
