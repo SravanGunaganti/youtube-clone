@@ -1,4 +1,3 @@
-// components/ChannelPage/TabsContent.jsx
 import {
   MdVideoLibrary,
   MdPlaylistPlay,

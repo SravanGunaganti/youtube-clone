@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { MdClose, MdEdit, MdPerson, MdEmail } from "react-icons/md";
 import { AiOutlineCamera } from "react-icons/ai";
 import { toast } from "react-toastify";
-import { userAPI } from "../services/api";
+import { handleAPIError, userAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { getInitial } from "../utils/utilityFunctions";
-//
+
 const EditProfileModal = ({ isOpen, onClose, user }) => {
   const { updateAuthUser } = useAuth();
   const [formData, setFormData] = useState({
@@ -22,8 +22,12 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
         username: user.username || "",
         avatar: user.avatar || "",
       });
-      setAvatarError(user.avatar? false : true);
+      setAvatarError(user.avatar ? false : true);
+      document.body.style.overflow = "hidden";
     }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [user, isOpen]);
 
   // Handle input changes
@@ -42,7 +46,6 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
 
   // Handle form submission
   const handleSubmit = async (e) => {
-
     e.preventDefault();
     setIsLoading(true);
 
@@ -61,8 +64,8 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
         toast.error(response.message || "Failed to update profile");
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error(error.response?.data?.message || "Failed to update profile");
+      console.error("Error updating profile:", handleAPIError(error));
+      toast.error("Failed to update profile");
     } finally {
       setIsLoading(false);
     }
@@ -205,4 +208,4 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
   );
 };
 
-export default EditProfileModal;
+export default React.memo(EditProfileModal);

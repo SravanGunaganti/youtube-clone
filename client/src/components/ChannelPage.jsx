@@ -15,7 +15,7 @@ import ChannelInfo from "./channel/ChannelInfo.jsx";
 
 const ChannelPage = () => {
   const { channelId } = useParams();
-  const navigate = useNavigate();
+
   const { authUser, isLoggedIn } = useAuth();
 
   const [channelData, setChannelData] = useState({});
@@ -29,6 +29,7 @@ const ChannelPage = () => {
   const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const [showEditChannelModal, setShowEditChannelModal] = useState(false);
   const [editingVideo, setEditingVideo] = useState(null);
+  const navigate = useNavigate();
 
   const startEditChannel = () => {
     setShowEditChannelModal(true);
@@ -48,7 +49,7 @@ const ChannelPage = () => {
       setShowEditChannelModal(false);
       toast.success("Channel updated successfully");
     } catch (error) {
-      toast.error(handleAPIError(error).message);
+      console.error("Error updating channel:", handleAPIError(error));
     }
   };
 
@@ -73,17 +74,18 @@ const ChannelPage = () => {
       try {
         const response = await videoAPI.createVideo({
           ...newVideo,
-          thumbnailUrl:
-            newVideo.thumbnailUrl,
+          thumbnailUrl: newVideo.thumbnailUrl,
         });
         if (response.success) {
           const data = response.data;
-          setVideos((prev) => [...prev, data]);
+          const { id, ...rest } = data;
+          setVideos((prev) => [{ _id: id, ...rest }, ...prev]);
           setShowUploadModal(false);
           toast.success("Video uploaded successfully!");
         }
       } catch (error) {
-        toast.error(handleAPIError(error).message);
+        toast.error("Failed to upload video");
+        console.error("Error uploading video:", handleAPIError(error));
       }
     } else {
       toast.error("Please fill in all required fields.");
@@ -102,7 +104,6 @@ const ChannelPage = () => {
         editedVideo
       );
       if (response.success) {
-        console.log(videos);
         setVideos((prev) =>
           prev.map((v) =>
             v._id === editingVideo._id ? { ...v, ...editedVideo } : v
@@ -113,7 +114,8 @@ const ChannelPage = () => {
         toast.success("Video updated successfully!");
       }
     } catch (error) {
-      toast.error(handleAPIError(error).message);
+      toast.error("Failed to update video");
+      console.error("Error updating video:", handleAPIError(error));
     }
   };
 
@@ -130,7 +132,8 @@ const ChannelPage = () => {
           toast.success("Video deleted successfully!");
         }
       } catch (error) {
-        toast.error(handleAPIError(error).message);
+        toast.error("Failed to delete video");
+        console.error("Error deleting video:", handleAPIError(error));
       }
     }
   };
@@ -143,20 +146,17 @@ const ChannelPage = () => {
   };
 
   const handleCreateChannel = async (formData) => {
-    console.log(formData)
     if (!isLoggedIn) return navigate("/signin");
 
-    // const formData = new FormData(e.target);
-    const name =
-      formData.name || authUser?.username || "My Channel";
-    const description =
-      formData.description || `Welcome to ${name}!`;
+    const name = formData.name || authUser?.username || "My Channel";
+    const description = formData.description || `Welcome to ${name}!`;
+    const avatar = formData.avatar || authUser?.avatar || "https://via.placeholder.com/150";
 
     try {
       const response = await channelAPI.createChannel({
         channelName: name,
         description,
-        avatar:formData.avatar
+        avatar,
       });
       if (response.success) {
         setChannelData(response.data);
@@ -166,7 +166,8 @@ const ChannelPage = () => {
         toast.success("Channel created successfully!");
       }
     } catch (error) {
-      toast.error(handleAPIError(error).message);
+      toast.error("Failed to create channel");
+      console.error("Error creating channel:", handleAPIError(error));
     }
   };
 
@@ -183,7 +184,7 @@ const ChannelPage = () => {
             setChannelData(response.data);
             setVideos(response.data.videos);
             setChannelExists(true);
-          }else{
+          } else {
             setChannelExists(false);
           }
           return;
@@ -198,10 +199,8 @@ const ChannelPage = () => {
           setVideos(response.data.videos);
           setChannelExists(true);
           setIsOwner(response.data.owner.id === authUser?.id);
-          
         } else {
           setChannelExists(false);
-          
         }
         return;
       }
@@ -251,27 +250,30 @@ const ChannelPage = () => {
     );
 
   return (
-    <div className="w-full bg-white ">
+    <div className="w-full max-w-[1360px] bg-white mx-auto ">
       {/* Banner */}
-      <div className="w-full text-lg md:text-2xl font-semibold flex items-center justify-center rounded-xl h-32 sm:h-48 lg:h-60 p-4">
-
-          {channelData?.channelBanner ?<img
+      {channelData?.channelBanner &&<div className={`w-full  flex items-center justify-center rounded-xl aspect-[535/86] p-4`}>
+          <img
             src={channelData?.channelBanner}
             onError={(e) => {
               e.target.src =
-                "https://yt3.googleusercontent.com/qadmKywk8TQsrBFmbrU5EcFtOZYju26eaRUYZFl90pXJIWlmKDc2bcu-XaLy1mb0bNxPYJZGbw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj"
+                "https://yt3.googleusercontent.com/qadmKywk8TQsrBFmbrU5EcFtOZYju26eaRUYZFl90pXJIWlmKDc2bcu-XaLy1mb0bNxPYJZGbw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj";
             }}
             alt="Channel banner"
             className="w-full rounded-xl h-full object-cover"
-          />:"Add a banner to your channel"}
-        
-      </div>
+          />  
+      </div>}
+       {(isLoggedIn && isOwner && !channelData?.channelBanner) && <div className={`w-full  flex items-center justify-center rounded-xl h-32 sm:h-48 lg:h-60 p-4`}><div onClick={startEditChannel} className={`w-full border cursor-pointer border-gray-300 bg-gray-100 rounded-xl h-full text-lg md:text-3xl  font-semibold md:font-bold flex items-center justify-center`}>
+          Add a banner to your channel
+        </div>
+        </div>}
 
       <ChannelInfo
         channelData={channelData}
         videos={videos}
         isOwner={isOwner}
         isLoggedIn={isLoggedIn}
+        setActiveTab={setActiveTab}
         handleSubscribe={handleSubscribe}
         startEditChannel={startEditChannel}
         setShowUploadModal={setShowUploadModal}
@@ -298,9 +300,8 @@ const ChannelPage = () => {
 
       {showEditModal && editingVideo && (
         <UpdateVideoModal
-        video={editingVideo}
-          onClose={() => 
-            setShowEditModal(false)}
+          video={editingVideo}
+          onClose={() => setShowEditModal(false)}
           onUpdate={handleUpdateVideo}
         />
       )}
@@ -308,8 +309,6 @@ const ChannelPage = () => {
       {showEditChannelModal && (
         <UpdateChannelModal
           channelData={channelData}
-          // setChannelData={setChannelData}
-          // setEditChannelData={setEditChannelData}
           onClose={() => setShowEditChannelModal(false)}
           onSubmit={handleUpdateChannel}
         />

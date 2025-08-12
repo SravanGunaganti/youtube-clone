@@ -6,9 +6,8 @@ import {
   getToken,
   removeToken,
 } from "../utils/authUtils";
-import { handleAPIError, userAPI } from "../services/api";
+import { handleAPIError } from "../services/api";
 import Loader from "../components/Loader";
-// import { data } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -24,7 +23,7 @@ export const AuthProvider = ({ children }) => {
         logout();
         setIsLoggedIn(false);
         setLoading(false);
-        return ;
+        return;
       }
       setAuthUser(user);
       setIsLoggedIn(true);
@@ -34,13 +33,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (res) => {
-    try{
+    try {
       const token = res?.accessToken;
       const userData = res?.data;
       if (token) {
         removeToken();
         saveToken(token);
-      };
+      }
       if (userData) {
         setAuthUser(userData);
         setIsLoggedIn(true);
@@ -48,7 +47,7 @@ export const AuthProvider = ({ children }) => {
       }
       return;
     } catch (error) {
-      throw Error (handleAPIError(error).message);
+      throw Error(handleAPIError(error).message);
     }
   };
 

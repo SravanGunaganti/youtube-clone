@@ -1,4 +1,5 @@
 function formatNumber(number) {
+  if (!number) return 0;
   if (number < 1000) return `${number}`;
   if (number < 1_000_000) return `${(number / 1000).toFixed(1)}K`;
   if (number < 1_000_000_000) return `${(number / 1_000_000).toFixed(1)}M`;

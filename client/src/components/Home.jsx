@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { videoAPI } from "../services/api";
 import useActivePath from "../helpers/useActivePath.js";
 import { BiRefresh } from "react-icons/bi";
-
+import { toast } from "react-toastify";
 
 // Home component
 export default function Home() {
@@ -15,7 +15,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const { isSidebarOpen, searchQuery,handleSearch } = useContext(NavContext);
+  const { isSidebarOpen, searchQuery, handleSearch } = useContext(NavContext);
+  const [categories, setCategories] = useState([]);
   const isActivePath = useActivePath();
   const { authUser } = useAuth();
 
@@ -30,6 +31,11 @@ export default function Home() {
       setLoading(true);
       const res = await videoAPI.getAllVideos();
       if (res.success) {
+        const categories = [
+          ...new Set(res.data.videos.map((video) => video.category)),
+        ];
+        setCategories(["All", ...categories]);
+
         setVideos(res.data.videos);
         setAllVideos(res.data.videos);
       } else {
@@ -40,9 +46,10 @@ export default function Home() {
       setLoading(false);
       setError(null);
     } catch (error) {
-      console.error("Error fetching videos:", error);
+      toast.error(handleAPIError(error).message);
       setError("Failed to load videos");
       setLoading(false);
+      console.error("Error fetching videos:", handleAPIError(error));
     }
   }
 
@@ -97,6 +104,7 @@ export default function Home() {
           <div disabled className="disabled-pointer-events py-2 opacity-0">
             <FilterButtons
               className="sticky"
+              categories={categories}
               selectedCategory={selectedCategory}
               onCategoryChange={handleCategoryChange}
             />
@@ -104,11 +112,12 @@ export default function Home() {
 
           <div
             className={`${
-              !isActivePath("/watch/", true) && isSidebarOpen
+              !isActivePath("/watch/") && isSidebarOpen
                 ? "md:left-18 xl:left-60"
                 : "md:left-18"
             } top-14 fixed z-30 max-w-full right-0 bg-white py-2`}>
             <FilterButtons
+              categories={categories}
               selectedCategory={selectedCategory}
               onCategoryChange={handleCategoryChange}
             />
@@ -122,11 +131,11 @@ export default function Home() {
                 <span className="font-medium">"{searchQuery}"</span>
               </p>
               <button
-          onClick={handleResetFilters}
-          className="flex whitespace-nowrap items-center text-sm gap-2 px-4 py-2 bg-white  border text-gray-600 border-gray-600 rounded-lg shadow-lg hover:bg-gray-50 transition">
-          <BiRefresh size={20}/>
-          Reset Filters
-        </button>
+                onClick={handleResetFilters}
+                className="flex whitespace-nowrap items-center text-sm gap-2 px-4 py-2 bg-white  border text-gray-600 border-gray-600 rounded-lg shadow-lg hover:bg-gray-50 transition">
+                <BiRefresh size={20} />
+                Reset Filters
+              </button>
             </div>
           )}
 

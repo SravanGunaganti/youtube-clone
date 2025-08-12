@@ -10,6 +10,7 @@ const VideoCard = ({ video }) => {
   const videoRef = useRef(null);
   const [duration, setDuration] = useState(0);
   const [avatarError, setAvatarError] = useState(false);
+  const [hideDuration, setHideDuration] = useState(false);
 
   // Handle video loaded metadata
   const handleLoadedMetadata = () => {
@@ -22,6 +23,9 @@ const VideoCard = ({ video }) => {
   const handleMouseOver = () => {
     if (!videoRef.current) return;
     videoRef.current.play();
+    if (!hideDuration) {
+      setHideDuration(true);
+    }
   };
 
   // Pause video on mouse out
@@ -30,6 +34,9 @@ const VideoCard = ({ video }) => {
     videoRef.current.pause();
     videoRef.current.currentTime = 0;
     videoRef.current.load();
+    if (hideDuration) {
+      setHideDuration(false);
+    }
   };
 
   // Format duration
@@ -57,16 +64,21 @@ const VideoCard = ({ video }) => {
             poster={video.thumbnailUrl}
             preload="metadata"
             src={video.videoUrl}>
-            <source src={video.videoUrl} type="video/mp4" />
+            <source
+              src={`${video.videoUrl}?nocache=${Date.now()}`}
+              type="video/mp4"
+            />
             Your browser does not support the video tag.
           </video>
-          <div className="absolute bottom-2 right-2 bg-black bg-opacity/80 text-white text-xs px-1 py-0.5 rounded">
-            {duration ? formatDuration(duration) : "Loading..."}
-          </div>
+          {!hideDuration && (
+            <div className="absolute  bottom-2 right-2 bg-black bg-opacity/80 text-white text-xs px-1 py-0.5 rounded">
+              {duration ? formatDuration(duration) : "00:00"}
+            </div>
+          )}
         </div>
       </Link>
       {/* Video details */}
-      <div className="p-3 flex space-x-3">
+      <div className="p-3 md:pl-0  space-x-3 flex">
         <div className="flex-shrink-0">
           {video.channel.avatar && !avatarError ? (
             <img
@@ -84,15 +96,15 @@ const VideoCard = ({ video }) => {
 
         <div className="flex-1 min-w-0">
           {/* Title with link to watch */}
-          <Link to={`/watch/${video.id}` } className="block">
-            <h3 className="text-base font-medium  leading-[22px] text-gray-900 line-clamp-2 mb-1">
+          <Link to={`/watch/${video.id}`} className="block">
+            <h3 className="text-base font-medium  text-gray-900 line-clamp-2 mb-0.5">
               {video.title}
             </h3>
           </Link>
 
           {/* Channel name with link */}
-          <div className="flex text-xs sm:text-sm md:flex-col gap-1 md:items-start items-center text-gray-600">
-            <Link to={`/channel/${video.channel.id}`}>
+          <div className="flex text-xs sm:text-sm md:flex-col gap-0.5 md:items-start items-center text-gray-600">
+            <Link to={`/channel/${video.channel.id}`} className="">
               <p className=" text-gray-600 font-normal hover:text-gray-900 cursor-pointer">
                 {video.channel.name || "Unknown Channel"}
               </p>

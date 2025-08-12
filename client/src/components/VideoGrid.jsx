@@ -1,18 +1,20 @@
-import React from "react";
-import VideoCard from "./VideoCard";
+import React, { lazy } from "react";
+// import VideoCard from "./VideoCard";
+const VideoCard = lazy(() => import("./VideoCard"));
 
 const VideoGrid = ({ searchQuery, videos, loading, error, fetchVideos }) => {
   // Render loading state
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4 p-4">
         {[...Array(8)].map((_, index) => (
           <div key={index} className="animate-pulse">
-            <div className="bg-gray-300 h-48 rounded-lg mb-3"></div>
+            <div className="bg-gray-300 w-full aspect-video rounded-xl mb-3"></div>
             <div className="flex space-x-3">
-              <div className="bg-gray-300 w-9 h-9 rounded-full"></div>
+              <div className="bg-gray-300 w-9 h-9  rounded-full"></div>
               <div className="flex-1">
                 <div className="bg-gray-300 h-4 rounded mb-2"></div>
+                <div className="bg-gray-300 h-3 rounded w-5/6 mb-2 hidden md:block"></div>
                 <div className="bg-gray-300 h-3 rounded w-3/4"></div>
               </div>
             </div>
@@ -55,7 +57,7 @@ const VideoGrid = ({ searchQuery, videos, loading, error, fetchVideos }) => {
 
   // Render video grid
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 5xl:grid-cols-4 gap-4 md:p-4">
+    <div className="max-w-[2096px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 min-[113.5rem]:grid-cols-4 gap-4 md:p-4">
       {videos.map((video) => (
         <VideoCard key={video.id} video={video} />
       ))}

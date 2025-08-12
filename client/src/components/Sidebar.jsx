@@ -16,7 +16,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         text-gray-900  z-55 transform transition-transform ease-linear duration-200 ${
           isOpen
             ? "translate-x-0 block"
-            : !isActivePath("/watch/", true)
+            : !isActivePath("/watch/")
             ? "xl:hidden -translate-x-full xl:translate-0"
             : "-translate-x-full"
         }`}>
@@ -53,7 +53,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             <IoMdHome className="w-6 h-6" />
             <span className="text-sm">Home</span>
           </Link>
-            {/* Sidebar links */}
+          {/* Sidebar links */}
           {sidebarLinks.map(({ section, links }, i) => (
             <div key={section || i} className="space-y-1">
               {section !== "Main" && (

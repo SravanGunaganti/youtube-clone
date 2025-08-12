@@ -30,9 +30,7 @@ API.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
       removeToken();
-      // localStorage.removeItem('user');
       window.location.href = "/signin";
     }
     return Promise.reject(error);
@@ -75,9 +73,20 @@ export const channelAPI = {
     return await API.delete(`/channels/${channelId}`);
   },
 
+  // Check if channel exists
   channelExists: async (channelId) => {
     return await API.get(`/channels/${channelId}/exists`);
   },
+
+  // Toggle subscription to a channel
+  toggleSubscribe: async (channelId) => {
+    return await API.post(`/channels/${channelId}/subscribe`);
+  },
+
+  // Check subscription status for current user
+  getSubscriptionStatus: async (channelId) => {
+    return await API.get(`/channels/${channelId}/subscription-status`);
+  }
 };
 
 //  VIDEO APIs

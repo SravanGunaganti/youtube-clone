@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
-import { categories } from "../constants/categories";
 
-const FilterButtons = ({ selectedCategory, onCategoryChange }) => {
+const FilterButtons = ({ selectedCategory, categories, onCategoryChange }) => {
   const itemRefs = React.useRef([]);
   const scrollRef = React.useRef(null);
 
@@ -26,7 +25,7 @@ const FilterButtons = ({ selectedCategory, onCategoryChange }) => {
   };
 
   return (
-    <div className="flex items-center gap-2  bg-white">
+    <div className="flex items-center gap-2  bg-white w-full mx-auto overflow-hidden max-w-[2048px] md:pr-4">
       {/* Scroll left button */}
       <button
         onClick={() => scroll("left")}

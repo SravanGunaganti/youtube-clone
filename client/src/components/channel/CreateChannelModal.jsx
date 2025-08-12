@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getInitial } from "../../utils/utilityFunctions";
 import { AiOutlineCamera } from "react-icons/ai";
-import { MdWifiChannel } from "react-icons/md";
+import { MdClose } from "react-icons/md";
 
 const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
   const [channelData, setChannelData] = useState({
@@ -13,10 +13,12 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
     authUser?.avatar ? false : true
   );
 
+  const [isLoaded, setIsLoaded] = useState(true);
+
   const handleInputChange = (e) => {
     setChannelData({ ...channelData, [e.target.name]: e.target.value });
     if (e.target.name === "avatar") {
-      setAvatarError(false);
+      setAvatarError(true);
     }
   };
 
@@ -35,10 +37,11 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
   };
 
   const handleSubmit = (e) => {
-    setIsLoading(true);
     e.preventDefault();
+    console.log(channelData, avatarError);
+    alert(JSON.stringify(channelData) + JSON.stringify(avatarError));
     if (avatarError) {
-      return toast.error("Please provide a valid profile picture url");
+      toast.error("Please provide a valid profile picture url");
     }
     onSubmit(channelData);
     reset();
@@ -48,15 +51,40 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
     setAvatarError(true);
   };
 
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      setIsLoaded(true);
+    };
+    img.onerror = () => {
+      setIsLoaded(true);
+    };
+    img.src = channelData.avatar;
+  }, [channelData.avatar]);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="relative overflow-hidden w-full max-h-full overflow-y-auto rounded-2xl p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-auto ">
+    <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 overflow-y-auto">
+      <div className="w-full max-w-md mx-auto my-8">
+        <div className="bg-white rounded-xl shadow-2xl">
           {/* Modal Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">
-              Create a channel
+          <div className="flex items-center justify-between border-b border-gray-100 p-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Create Channel
             </h2>
+            <button
+              onClick={handleClose}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              // disabled={!isLoaded}
+            >
+              <MdClose size={20} className="text-gray-500" />
+            </button>
           </div>
 
           {/* Modal Content */}
@@ -65,32 +93,43 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
               {/* Channel Name */}
 
               <div className="flex flex-col items-center mb-6">
-                <div className="relative mb-4">
-                  {!avatarError ? (
+                <div className="relative mb-4 flex justify-center items-center">
+                  {channelData?.avatar && (
                     <img
-                      src={channelData.avatar}
+                      src={channelData?.avatar}
                       alt="Profile preview"
-                      className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
-                      onError={handleAvatarError}
+                      className={`${
+                        avatarError ? "hidden" : ""
+                      } w-24 h-24 rounded-full object-cover border-4 border-gray-200`}
+                      onError={() => {
+                        setAvatarError(true);
+                        setIsLoaded(true);
+                      }}
+                      onLoad={() => {
+                        setAvatarError(false);
+                        setIsLoaded(true);
+                      }}
                     />
-                  ) : (
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center font-bold text-white text-2xl border-4 border-gray-200">
-                      {getInitial(channelData.name)}
-                    </div>
-                  )}
+                  )}{" "}
+                  <div
+                    className={`${
+                      avatarError ? "" : "hidden"
+                    } w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center font-bold text-white text-2xl border-4 border-gray-200`}>
+                    {getInitial(channelData.name)}
+                  </div>
                   <div className="absolute -bottom-2 -right-2 bg-blue-600 text-white p-2 rounded-full shadow-lg">
                     <AiOutlineCamera size={16} />
                   </div>
                 </div>
                 <p className="text-sm text-gray-600 text-center">
-                  Profile picture will be displayed across YouTube
+                  Channel Profile picture will be displayed across YouTube
                 </p>
               </div>
 
               {/* Avatar URL Input */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <MdWifiChannel className="inline mr-1" size={16} />
+                  {/* <MdWifiChannel className="inline mr-1" size={16} /> */}
                   Avatar URL
                 </label>
                 <input
@@ -128,7 +167,7 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description (optional)
+                  Description
                 </label>
                 <textarea
                   name="description"
@@ -163,7 +202,13 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
+                  disabled={
+                    !channelData.name ||
+                    !channelData.description ||
+                    !isLoaded ||
+                    avatarError
+                  }
+                  className="disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
                   Create
                 </button>
               </div>

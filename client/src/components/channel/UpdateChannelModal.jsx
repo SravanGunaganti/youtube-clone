@@ -20,7 +20,7 @@ const UpdateChannelModal = ({ channelData, onClose, onSubmit }) => {
   );
   const [bannerError, setBannerError] = useState(
     channelData?.channelBanner ? false : true
-    );
+  );
 
   const reset = () => {
     setEditChannelData({
@@ -44,43 +44,47 @@ const UpdateChannelModal = ({ channelData, onClose, onSubmit }) => {
     if (e.target.name === "channelBanner") {
       setBannerError(true);
     }
-
   };
 
   useEffect(() => {
     const img = new Image();
-     img.onload = () => {
-       setIsLoaded(true);
-     };
-     img.onerror = () => {
-       setIsLoaded(false);
-     };
-     img.src = editChannelData.avatar;
-     img.src = editChannelData.channelBanner;
-    
+    img.onload = () => {
+      setIsLoaded(true);
+    };
+    img.onerror = () => {
+      setIsLoaded(false);
+    };
+    img.src = editChannelData.avatar;
+    img.src = editChannelData.channelBanner;
   }, [editChannelData.avatar, editChannelData.channelBanner]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-     if (avatarError || !isLoaded) {
+    if (avatarError || !isLoaded) {
       return toast.error("Please provide a valid channel avatar url");
     }
-     if (bannerError || !isLoaded) {
+    if (bannerError || !isLoaded) {
       return toast.error("Please provide a valid channel banner url");
     }
-    console.log(editChannelData,avatarError,bannerError);
+
     onSubmit(editChannelData);
     reset();
   };
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="relative overflow-hidden w-full min-h-full max-h-full overflow-y-auto rounded-2xl p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-auto ">
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-4 border-gray-100">
+    <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 overflow-y-auto">
+      <div className="w-full max-w-md mx-auto my-8">
+        <div className="bg-white rounded-xl shadow-2xl">
+          <div className="p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100">
               <h2 className="text-xl font-semibold text-gray-900">
                 Update Channel
               </h2>
@@ -101,13 +105,19 @@ const UpdateChannelModal = ({ channelData, onClose, onSubmit }) => {
                     <img
                       src={editChannelData?.avatar}
                       alt="Profile preview"
-                      className={`${avatarError ? "hidden" : ""} w-24 h-24 rounded-full object-cover border-4 border-gray-200`}
+                      className={`${
+                        avatarError ? "hidden" : ""
+                      } w-24 h-24 rounded-full object-cover border-4 border-gray-200`}
                       onError={() => setAvatarError(true)}
                       onLoad={() => setAvatarError(false)}
                     />
-                  )} <div className={`${avatarError ? "" : "hidden"} w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center font-bold text-white text-2xl border-4 border-gray-200`}>
-                      {getInitial(editChannelData.channelName)}
-                    </div>
+                  )}{" "}
+                  <div
+                    className={`${
+                      avatarError ? "" : "hidden"
+                    } w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center font-bold text-white text-2xl border-4 border-gray-200`}>
+                    {getInitial(editChannelData.channelName)}
+                  </div>
                   <div className="absolute -bottom-2 -right-2 bg-blue-600 text-white p-2 rounded-full shadow-lg">
                     <AiOutlineCamera size={16} />
                   </div>
@@ -130,9 +140,6 @@ const UpdateChannelModal = ({ channelData, onClose, onSubmit }) => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                   placeholder="https://example.com/avatar.jpg"
                 />
-                {/* <p className="text-xs text-gray-500 mt-1">
-                              Enter a URL for your channel picture
-                            </p> */}
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -165,27 +172,31 @@ const UpdateChannelModal = ({ channelData, onClose, onSubmit }) => {
               </div>
 
               {/* Banner URL */}
-             
+
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Banner URL
                 </label>
-                 <div className="w-full text-xl mb-2 flex justify-center items-center font-bold border border-gray-300 rounded-xl h-25">
-                {editChannelData?.channelBanner && (
-                  <img
-                    src={editChannelData?.channelBanner}
-                    onError={() =>
-                      setBannerError(true)}
-                    key="ChannelBanner"
-                    onLoad={() => setBannerError(false)}
-                    alt="Channel banner"
-                    className={`${bannerError ? "hidden" : ""} w-full rounded-xl h-full object-cover`}
-                  />
-                )}
-                <p className={`${bannerError ? "" : "hidden"} text-sm text-gray-600 text-center`}>
-                  Add a banner image for your channel
+                <div className="w-full text-xl mb-2 flex justify-center items-center font-bold border border-gray-300 rounded-xl h-25">
+                  {editChannelData?.channelBanner && (
+                    <img
+                      src={editChannelData?.channelBanner}
+                      onError={() => setBannerError(true)}
+                      key="ChannelBanner"
+                      onLoad={() => setBannerError(false)}
+                      alt="Channel banner"
+                      className={`${
+                        bannerError ? "hidden" : ""
+                      } w-full rounded-xl h-full object-cover`}
+                    />
+                  )}
+                  <p
+                    className={`${
+                      bannerError ? "" : "hidden"
+                    } text-sm text-gray-600 text-center`}>
+                    Add a banner image for your channel
                   </p>
-              </div>
+                </div>
                 <input
                   type="url"
                   name="channelBanner"
@@ -207,7 +218,11 @@ const UpdateChannelModal = ({ channelData, onClose, onSubmit }) => {
                 <button
                   type="submit"
                   disabled={bannerError || avatarError}
-                  className={`${bannerError || avatarError? "opacity-50 cursor-not-allowed" : ""} flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors`}>
+                  className={`${
+                    bannerError || avatarError
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  } flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors`}>
                   Save Chanages
                 </button>
               </div>

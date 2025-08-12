@@ -3,23 +3,85 @@ import { Link } from "react-router-dom";
 import { MdVerified, MdSettings } from "react-icons/md";
 import { FaBell, FaUpload } from "react-icons/fa";
 import { formatNumber, getInitial } from "../../utils/utilityFunctions";
+import { channelAPI } from "../../services/api";
+import { toast } from "react-toastify";
+import { IoCheckmarkCircleSharp } from "react-icons/io5";
 
 const ChannelInfo = ({
   channelData,
   videos,
   isOwner,
   isLoggedIn,
-  handleSubscribe,
+  // handleSubscribe,
+  setActiveTab,
   startEditChannel,
   setShowUploadModal,
-}) => {  
-  // Avatar error handling 
-  const [avatarError, setAvatarError] = useState(channelData?.avatar ? false : true);
+}) => {
+  // Avatar error handling
+  const [avatarError, setAvatarError] = useState(
+    channelData?.avatar ? false : true
+  );
   const [showDescription, setShowDescription] = useState(false);
+  const [subscriberCount, setSubscriberCount] = useState(0);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isCheckingSubscription, setIsCheckingSubscription] = useState(false);
   useEffect(() => {
-    setAvatarError(null);
+    setAvatarError(false);
   }, [channelData.avatar]);
-  
+
+  const checkSubscriptionStatus = async (channelId) => {
+    if (!isLoggedIn || isOwner) return;
+
+    try {
+      setIsCheckingSubscription(true);
+      const response = await channelAPI.getSubscriptionStatus(channelId);
+      if (response.success) {
+        setIsSubscribed(response.data.isSubscribed);
+        setSubscriberCount(response.data.subscribers);
+      }
+    } catch (error) {
+      console.error("Error checking subscription status:", error);
+      toast.error("Failed to check subscription status");
+    } finally {
+      setIsCheckingSubscription(false);
+    }
+  };
+
+  const handleSubscribe = async (channelId) => {
+    if (!isLoggedIn) {
+      toast.error("Please sign in to subscribe to channels");
+      return;
+    }
+    if (isOwner) {
+      toast.error("You cannot subscribe to your own channel");
+      return;
+    }
+    if (isCheckingSubscription) return;
+
+    try {
+      const response = await channelAPI.toggleSubscribe(channelId);
+      if (response.success) {
+        setIsSubscribed(response.data.isSubscribed);
+        setSubscriberCount(response.data.subscribers);
+        toast.success(
+          response.data.isSubscribed
+            ? "Subscribed successfully!"
+            : "Unsubscribed successfully"
+        );
+      }
+    } catch (error) {
+      console.error("Error toggling subscription:", error);
+      toast.error("Failed to update subscription");
+    }
+  };
+
+  useEffect(() => {
+    if (channelData?.id) {
+      checkSubscriptionStatus(channelData.id);
+      setSubscriberCount(channelData.subscribers);
+    }
+  }, [channelData]);
+
   return (
     <div className="px-4 lg:px-6 py-4">
       <div className="flex flex-row gap-4 items-center">
@@ -45,8 +107,8 @@ const ChannelInfo = ({
               {channelData.channelName}
             </h1>
             {channelData?.isVerified && (
-              <MdVerified
-                className="text-blue-500"
+              <IoCheckmarkCircleSharp
+                className="text-gray-500 "
                 size={24}
                 title="Verified channel"
               />
@@ -54,9 +116,7 @@ const ChannelInfo = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-600 md:mb-3">
-            <span>
-              {formatNumber(channelData?.subscribers || 0)} subscribers
-            </span>
+            <span>{formatNumber(subscriberCount)} subscribers</span>
             <span>•</span>
             <span>{videos?.length || 0} videos</span>
             {channelData?.totalViews && (
@@ -69,36 +129,36 @@ const ChannelInfo = ({
 
           <div className="hidden md:block">
             <div className="flex gap-2 mb-4 items-center">
-            <p className="text-sm break-words break-all whitespace-normal text-gray-700  max-w-2xl">
-              {showDescription
-                      ? channelData.description
-                      : `${channelData.description?.substring(0, 20)}...`}
-                      <span className="ml-1"><button
-                    onClick={() => setShowDescription(!showDescription)}
+              <p className="text-sm break-words break-all whitespace-normal text-gray-700  max-w-2xl">
+                {showDescription
+                  ? channelData.description
+                  : `${channelData.description?.substring(0, 30)}...`}
+                <span className="ml-1">
+                  <button
+                    onClick={() => setActiveTab("about")}
                     className="text-sm whitespace-nowrap font-medium text-gray-900  hover:text-gray-700">
-                    {showDescription ? "Show less" : "Show more"}
+                    Read more
                   </button>
-                  </span>
-                  </p>
-                  
+                </span>
+              </p>
             </div>
 
             <div className="flex items-center gap-3">
               {!isOwner && isLoggedIn && (
                 <button
-                  onClick={handleSubscribe}
+                  onClick={() => handleSubscribe(channelData.id)}
                   className={`px-6 py-2 rounded-full font-medium transition-all duration-200 ${
-                    channelData?.isSubscribed
+                    isSubscribed
                       ? "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
                       : "bg-black text-white hover:bg-gray-800"
                   }`}>
-                  {channelData?.isSubscribed ? (
+                  {isSubscribed ? (
                     <div className="flex items-center gap-2">
                       <FaBell size={14} />
                       <span>Subscribed</span>
                     </div>
                   ) : (
-                     "Subscribe"
+                    "Subscribe"
                   )}
                 </button>
               )}
@@ -133,31 +193,32 @@ const ChannelInfo = ({
         </div>
       </div>
       <div className=" md:hidden mt-2 space-y-3">
-       <div className="flex gap-2 items-center">
-            <p className="text-xs gap-2 break-all break-words whitespace-normal text-gray-700 max-w-2xl">
-              {showDescription
-                      ? channelData.description
-                      : `${channelData.description?.substring(0, 20)}... `}
-                      <span className="ml-1"><button
-                    onClick={() => setShowDescription(!showDescription)}
-                    className="text-sm font-medium text-gray-900  hover:text-gray-700">
-                    {showDescription ? "Show less" : "Show more"}
-                  </button></span>
-                  </p>
-                  
-            </div>
+        <div className="flex gap-2 items-center">
+          <p className="text-xs gap-2 break-all break-words whitespace-normal text-gray-700 max-w-2xl">
+            {showDescription
+              ? channelData.description
+              : `${channelData.description?.substring(0, 20)}... `}
+            <span className="ml-1">
+              <button
+                onClick={() => setActiveTab("about")}
+                className="text-sm font-medium text-gray-900  hover:text-gray-700">
+                Read more
+              </button>
+            </span>
+          </p>
+        </div>
 
         <div className="flex w-full items-center gap-3">
           {!isOwner && isLoggedIn && (
             <button
-              onClick={handleSubscribe}
-              className={`w-full px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                channelData?.isSubscribed
+              onClick={() => handleSubscribe(channelData.id)}
+              className={`w-full px-4 py-2  text-center rounded-full text-sm font-medium transition-all duration-200 ${
+                isSubscribed
                   ? "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300"
                   : "bg-black text-white hover:bg-gray-800"
               }`}>
-              {channelData?.isSubscribed ? (
-                <div className="flex items-center gap-2">
+              {isSubscribed ? (
+                <div className="flex justify-center items-center gap-2">
                   <FaBell size={14} />
                   <span>Subscribed</span>
                 </div>

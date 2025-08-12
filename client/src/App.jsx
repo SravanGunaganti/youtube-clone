@@ -72,7 +72,7 @@ export default function App() {
         <div className="relative h-full overflow-y-scroll">
           <main
             className={`h-full ${
-              !isActivePath("/watch/", true) && isSidebarOpen
+              !isActivePath("/watch/") && isSidebarOpen
                 ? "md:pl-18 xl:pl-60"
                 : "md:pl-18"
             } pt-14 md:px-3`}>
