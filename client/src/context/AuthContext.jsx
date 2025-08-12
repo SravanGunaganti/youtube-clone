@@ -1,8 +1,5 @@
-// src/context/AuthContext.jsx
-
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-// import axios from "axios";
 import {
   saveToken,
   getUserFromToken,
@@ -11,6 +8,7 @@ import {
 } from "../utils/authUtils";
 import { handleAPIError, userAPI } from "../services/api";
 import Loader from "../components/Loader";
+// import { data } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -26,7 +24,7 @@ export const AuthProvider = ({ children }) => {
         logout();
         setIsLoggedIn(false);
         setLoading(false);
-        return;
+        return ;
       }
       setAuthUser(user);
       setIsLoggedIn(true);
@@ -35,26 +33,22 @@ export const AuthProvider = ({ children }) => {
     getUser();
   }, []);
 
-  const login = async (email, password) => {
-    try {
-      const res = await userAPI.login({ email, password });
-      const token = res.accessToken;
+  const login = async (res) => {
+    try{
+      const token = res?.accessToken;
+      const userData = res?.data;
       if (token) {
         removeToken();
         saveToken(token);
-        const userData = await getUserFromToken();
-        if (!userData) {
-          logout();
-          setIsLoggedIn(false);
-          return;
-        }
+      };
+      if (userData) {
         setAuthUser(userData);
         setIsLoggedIn(true);
+        setLoading(false);
       }
-    } catch (err) {
-      console.log(err);
-      const message = handleAPIError(err).message || "Login failed. Try again!";
-      throw new Error(message);
+      return;
+    } catch (error) {
+      throw Error (handleAPIError(error).message);
     }
   };
 

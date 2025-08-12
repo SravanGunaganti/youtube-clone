@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { emailRegex, passwordRegex } from "../utils/validators";
 import { toast } from "react-toastify";
-import { userAPI } from "../services/api";
+import { handleAPIError, userAPI } from "../services/api";
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 const SignUp = () => {
@@ -33,9 +33,10 @@ const SignUp = () => {
         toast.success(res.message || "Registered successfully!");
         navigate("/signin");
       } else {
-        toast.error(res?.error?.message || "Registration failed.");
+        toast.error(res?.data.error?.message || "Registration failed.");
       }
     } catch (error) {
+      handleAPIError(error);
       const errMsg =
         error?.response?.data?.error?.message ||
         error?.message ||
@@ -89,12 +90,16 @@ const SignUp = () => {
             <input
               type="text"
               placeholder="Enter Username"
+              
               autoComplete="name"
               className="w-full bg-white border border-gray-300 rounded-lg p-2 outline-0"
-              {...register("username", { required: "Username is required" })}
+              {...register("username", { required: "Username is required", minLength: {
+            value: 2,
+            message: "Username must be at least 2 characters long"
+          } })}
             />
             {errors.username && (
-              <p className="text-red-600 text-sm mb-4">
+              <p className="text-red-600 text-sm">
                 {errors.username.message}
               </p>
             )}
@@ -106,7 +111,7 @@ const SignUp = () => {
             </label>
             <input
               type="password"
-              autoComplete="off"
+              autoComplete="new-password"
               minLength={6}
               placeholder="Enter password"
               className="w-full bg-white border border-gray-300 rounded-lg p-2 outline-0"
@@ -120,7 +125,7 @@ const SignUp = () => {
               })}
             />
             {errors.password && (
-              <p className="text-red-600 text-sm mb-4">
+              <p className="text-red-600 text-sm">
                 {errors.password.message}
               </p>
             )}

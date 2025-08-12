@@ -27,9 +27,8 @@ export const getUserFromToken = async () => {
     }
 
     const res = await API.get("/auth/verify");
-
-    if (res.data.success) {
-      return res.data.data;
+    if (res.success) {
+      return res.data;
     }
     removeToken();
     return null;

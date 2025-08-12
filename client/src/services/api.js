@@ -1,18 +1,18 @@
-import axios from 'axios';
-import { getToken, removeToken } from '../utils/authUtils';
+import axios from "axios";
+import { getToken, removeToken } from "../utils/authUtils";
 
 // Create axios instance with base configuration
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Request interceptor to add auth token
 API.interceptors.request.use(
   (config) => {
-    const token = getToken()
+    const token = getToken();
     if (token) {
       config.headers.Authorization = `JWT ${token}`;
     }
@@ -33,28 +33,30 @@ API.interceptors.response.use(
       // Token expired or invalid
       removeToken();
       // localStorage.removeItem('user');
-      window.location.href = '/signin';
+      window.location.href = "/signin";
     }
     return Promise.reject(error);
   }
 );
 
-//  CHANNEL APIs 
+//  CHANNEL APIs
 
 export const channelAPI = {
   // Create a new channel
   createChannel: async (channelData) => {
-    return await API.post('/channels', channelData);
+    return await API.post("/channels", channelData);
   },
 
   // Get user's own channel
   getMyChannel: async () => {
-    return await API.get('/my-channel');
+    return await API.get("/my-channel");
   },
 
   // Get channel by ID
   getChannel: async (channelId) => {
-    return await API.get(`/channels/${channelId}`);
+    return await API.get(`/channels/${channelId}`, {
+      validateStatus: () => true,
+    });
   },
 
   // Get all channels with pagination
@@ -83,7 +85,7 @@ export const channelAPI = {
 export const videoAPI = {
   // Create a new video
   createVideo: async (videoData) => {
-    return await API.post('/videos', videoData);
+    return await API.post("/videos", videoData);
   },
 
   // Get video by ID
@@ -98,7 +100,6 @@ export const videoAPI = {
 
   // Get videos by channel
   getVideosByChannel: async (channelId) => {
-
     return await API.get(`/channels/${channelId}/videos`);
   },
 
@@ -126,7 +127,6 @@ export const videoAPI = {
   videoExists: async (videoId) => {
     return await API.get(`/videos/${videoId}/exist`);
   },
-  
 };
 
 //  COMMENT APIs
@@ -157,8 +157,6 @@ export const commentAPI = {
   toggleCommentLike: async (commentId, action) => {
     return await API.put(`/comments/${commentId}/like`, { action });
   },
-
-  
 };
 
 //  USER APIs FOR AUTH AND PROFILE
@@ -166,39 +164,50 @@ export const commentAPI = {
 export const userAPI = {
   // Update user profile
   updateProfile: async (profileData) => {
-    return await API.put('/users/profile', profileData);
+    return await API.put("/users/profile", profileData);
   },
 
   // Get user profile
   getProfile: async () => {
-    return await API.get('/users/profile');
+    return await API.get("/users/profile");
   },
   // Register user
   register: async (userData) => {
-    return await API.post('/auth/register', userData);
+    return await API.post("/auth/register", userData);
   },
 
   // Login user
   login: async (credentials) => {
-    return await API.post('/auth/login', credentials);
+    return await API.post("/auth/login", credentials);
   },
 };
 
 // Error handling
 
 export const handleAPIError = (error) => {
-  console.error('API Error:', error);
-  
-  if (error.error) {
+  console.error("API Error:", error);
+
+  if (error.response) {
     return {
-      title: error.error.title || 'Error',
-      message: error.error.message || 'An unexpected error occurred',
+      title: error.response.data.error.title || "Error",
+      message:
+        error.response.data.error.message || "An unexpected error occurred",
+    };
+  } else if (error.request) {
+    return {
+      title: "Network Error",
+      message: "Unable to connect to the server. Please try again.",
+    };
+  } else if (error.error) {
+    return {
+      title: error.error.title || "Error",
+      message: error.error.message || "An unexpected error occurred",
     };
   }
-  
+
   return {
-    title: 'Network Error',
-    message: 'Unable to connect to the server. Please try again.',
+    title: "Network Error",
+    message: "Unable to connect to the server. Please try again.",
   };
 };
 

@@ -85,6 +85,7 @@ export default function App() {
         autoClose={2000}
         hideProgressBar={false}
         newestOnTop
+        limit={1}
         closeOnClick
         rtl={false}
       />

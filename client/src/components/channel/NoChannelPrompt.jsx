@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 // NoChannelPrompt component
 const NoChannelPrompt = ({ username, onCreate }) => {
   const navigate = useNavigate();
-
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
+      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full m-4">
         <div className="text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg

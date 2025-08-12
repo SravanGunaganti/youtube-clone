@@ -20,7 +20,6 @@ const Header = ({ onMenuToggle, onSearch }) => {
   const { showProfile, setShowProfile } = useContext(NavContext);
   const [avatarError, setAvatarError] = useState(false);
   const { authUser,logout } = useAuth();
-  // console.log(authUser);
 
   // useNavigate hook to navigate
   const navigate = useNavigate();

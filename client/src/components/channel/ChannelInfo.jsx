@@ -14,7 +14,7 @@ const ChannelInfo = ({
   setShowUploadModal,
 }) => {  
   // Avatar error handling 
-  const [avatarError, setAvatarError] = useState(null);
+  const [avatarError, setAvatarError] = useState(channelData?.avatar ? false : true);
   const [showDescription, setShowDescription] = useState(false);
   useEffect(() => {
     setAvatarError(null);
@@ -28,7 +28,6 @@ const ChannelInfo = ({
             src={channelData?.avatar}
             alt={channelData?.channelName}
             onError={() => setAvatarError(true)}
-            on
             className="w-18 h-18 md:w-30 md:h-30 lg:w-40 lg:h-40 rounded-full object-cover"
           />
         ) : (
@@ -70,16 +69,18 @@ const ChannelInfo = ({
 
           <div className="hidden md:block">
             <div className="flex gap-2 mb-4 items-center">
-            <p className="text-sm gap-2 text-gray-700  max-w-2xl">
+            <p className="text-sm break-words break-all whitespace-normal text-gray-700  max-w-2xl">
               {showDescription
                       ? channelData.description
                       : `${channelData.description?.substring(0, 20)}...`}
-                  </p>
-                  <button
+                      <span className="ml-1"><button
                     onClick={() => setShowDescription(!showDescription)}
-                    className="text-sm font-medium text-gray-900  hover:text-gray-700">
+                    className="text-sm whitespace-nowrap font-medium text-gray-900  hover:text-gray-700">
                     {showDescription ? "Show less" : "Show more"}
                   </button>
+                  </span>
+                  </p>
+                  
             </div>
 
             <div className="flex items-center gap-3">
@@ -97,7 +98,7 @@ const ChannelInfo = ({
                       <span>Subscribed</span>
                     </div>
                   ) : (
-                    "Subscribe"
+                     "Subscribe"
                   )}
                 </button>
               )}
@@ -133,14 +134,14 @@ const ChannelInfo = ({
       </div>
       <div className=" md:hidden mt-2 space-y-3">
        <div className="flex gap-2 items-center">
-            <p className="text-xs gap-2 text-gray-700  max-w-2xl">
+            <p className="text-xs gap-2 break-all break-words whitespace-normal text-gray-700 max-w-2xl">
               {showDescription
                       ? channelData.description
-                      : `${channelData.description?.substring(0, 20)}...`}
-                      <span><button
+                      : `${channelData.description?.substring(0, 20)}... `}
+                      <span className="ml-1"><button
                     onClick={() => setShowDescription(!showDescription)}
                     className="text-sm font-medium text-gray-900  hover:text-gray-700">
-                    {showDescription ? " Show less" : " Show more"}
+                    {showDescription ? "Show less" : "Show more"}
                   </button></span>
                   </p>
                   

@@ -10,10 +10,10 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
   const { updateAuthUser } = useAuth();
   const [formData, setFormData] = useState({
     username: "",
-    avatar: "",
+    avatar: user?.avatar || "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [previewAvatar, setPreviewAvatar] = useState("");
+  const [avatarError, setAvatarError] = useState(user?.avatar ? false : true);
 
   // Update form data when user or isOpen changes
   useEffect(() => {
@@ -22,7 +22,7 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
         username: user.username || "",
         avatar: user.avatar || "",
       });
-      setPreviewAvatar(user.avatar || "");
+      setAvatarError(user.avatar? false : true);
     }
   }, [user, isOpen]);
 
@@ -36,19 +36,20 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
 
     // Update avatar preview
     if (name === "avatar") {
-      setPreviewAvatar(value);
+      setAvatarError(false);
     }
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
+
     e.preventDefault();
     setIsLoading(true);
 
     try {
       const response = await userAPI.updateProfile({
         username: formData.username.trim(),
-        avatar: formData.avatar.trim(),
+        avatar: formData?.avatar.trim(),
       });
 
       if (response.success) {
@@ -68,7 +69,7 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
   };
   // Handle avatar error
   const handleAvatarError = () => {
-    setPreviewAvatar("");
+    setAvatarError(true);
   };
 
   if (!isOpen) return null;
@@ -95,16 +96,16 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
             {/* Avatar Section */}
             <div className="flex flex-col items-center mb-6">
               <div className="relative mb-4">
-                {previewAvatar ? (
+                {!avatarError ? (
                   <img
-                    src={previewAvatar}
+                    src={formData.avatar}
                     alt="Profile preview"
                     className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
                     onError={handleAvatarError}
                   />
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center font-bold text-white text-2xl border-4 border-gray-200">
-                    {getInitial(user.username)}
+                    {getInitial(formData.username)}
                   </div>
                 )}
                 <div className="absolute -bottom-2 -right-2 bg-blue-600 text-white p-2 rounded-full shadow-lg">
