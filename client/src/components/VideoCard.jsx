@@ -97,7 +97,7 @@ const VideoCard = ({ video }) => {
         <div className="flex-1 min-w-0">
           {/* Title with link to watch */}
           <Link to={`/watch/${video.id}`} className="block">
-            <h3 className="text-base font-medium  text-gray-900 line-clamp-2 mb-0.5">
+            <h3 className="text-base font-medium leading-[22px]  text-gray-900 line-clamp-2 mb-0.5">
               {video.title}
             </h3>
           </Link>

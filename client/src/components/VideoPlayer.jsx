@@ -125,7 +125,6 @@ const VideoPlayer = () => {
     try {
       const response = await channelAPI.toggleSubscribe(channelId);
       if (response.success) {
-        console.log(response.data);
         setIsSubscribed(response.data.isSubscribed);
         setSubscriberCount(response.data.subscribers);
         toast.success(

@@ -348,12 +348,7 @@ export const channelExists = async (req, res, next) => {
     next(error);
   }
 };
-
-/**
- * Toggle subscription status for a channel
- * Subscribes the authenticated user to the specified channel if not already subscribed,
- * or unsubscribes them if they are already subscribed.
- */
+ // Toggle subscribe
 export const toggleSubscribe = async (req, res, next) => {
   
   
@@ -372,10 +367,9 @@ export const toggleSubscribe = async (req, res, next) => {
       );
     }
 
-    // 2. Check if user is trying to subscribe to their own channel
+    // Check if user is trying to subscribe to their own channel
     if (channel.owner.toString() === userId.toString()) {
-      // await session.abortTransaction();
-      // session.endSession();
+
       return sendErrorResponse(
         res,
         400,
@@ -384,20 +378,20 @@ export const toggleSubscribe = async (req, res, next) => {
       );
     }
 
-    // 3. Check if user is already subscribed
+    // Check if user is already subscribed
     const isSubscribed = channel.subscribedBy.includes(userId);
     
       if (isSubscribed) {
-        // Remove like
+        // Remove subscription
         channel.subscribedBy.pull(userId);
         channel.subscribers = Math.max(0, channel.subscribers - 1);
       } else {
-        // Add like
+        // Add subscription
         channel.subscribedBy.push(userId);
         channel.subscribers += 1;
       }
       await channel.save();
-    // 5. Return updated subscription status
+    // Return updated subscription status,subscribers
     return sendSuccessResponse(
       res,
       200,
@@ -408,21 +402,18 @@ export const toggleSubscribe = async (req, res, next) => {
       isSubscribed ? 'Unsubscribed successfully' : 'Subscribed successfully'
     );
   } catch (error) {
-    // await session.abortTransaction();
-    // session.endSession();
+    
     next(error);
   }
 };
 
-/**
- * Check if the authenticated user is subscribed to a channel
- */
+// Check if the authenticated user is subscribed to a channel
 export const checkSubscriptionStatus = async (req, res, next) => {
   try {
     const { channelId } = req.params;
     const userId = req.user._id;
 
-    // 1. Find the channel
+    // Find the channel
     const channel = await Channel.findById(channelId);
     if (!channel) {
       return sendErrorResponse(
@@ -433,10 +424,10 @@ export const checkSubscriptionStatus = async (req, res, next) => {
       );
     }
 
-    // 2. Check if user is subscribed
+    // Check if user is subscribed
     const isSubscribed = channel.subscribedBy.includes(userId);
     
-    // 3. Return subscription status
+    // Return subscription status
     return sendSuccessResponse(
       res,
       200,

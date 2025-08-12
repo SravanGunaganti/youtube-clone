@@ -38,7 +38,6 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(channelData, avatarError);
     alert(JSON.stringify(channelData) + JSON.stringify(avatarError));
     if (avatarError) {
       toast.error("Please provide a valid profile picture url");

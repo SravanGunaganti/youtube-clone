@@ -252,7 +252,7 @@ const ChannelPage = () => {
   return (
     <div className="w-full max-w-[1360px] bg-white mx-auto ">
       {/* Banner */}
-      {channelData?.channelBanner &&<div className={`w-full  flex items-center justify-center rounded-xl aspect-[535/86] p-4`}>
+      {channelData?.channelBanner &&<div className={`w-full flex items-center justify-center rounded-lg h-32 sm:h-48 lg:h-60  p-4`}>
           <img
             src={channelData?.channelBanner}
             onError={(e) => {
