@@ -30,6 +30,8 @@ const Sidebar = ({ isOpen, onClose }) => {
           </button>
           {/* Logo */}
           <div className="flex-none relative">
+            <Link to="/">
+            
             <img
               src="https://www.gstatic.com/youtube/img/branding/youtubelogo/svg/youtubelogo.svg"
               className="w-[93px] mx-[16px] my-[18px]"
@@ -37,6 +39,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             <span className="text-[10px] absolute top-3 text-gray-500 right-1">
               IN
             </span>
+            </Link>
           </div>
         </div>
         {/* Sidebar links */}

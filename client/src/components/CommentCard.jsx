@@ -1,9 +1,16 @@
 import React, { use, useEffect, useState } from "react";
 import { getTimeAgo } from "../utils/utilityFunctions";
-import { FaEdit, FaRegThumbsDown, FaRegThumbsUp, FaThumbsDown, FaThumbsUp, FaTrash } from "react-icons/fa";
-import { BiDislike, BiLike } from "react-icons/bi";
+import {
+  FaEdit,
+  FaRegThumbsDown,
+  FaRegThumbsUp,
+  FaThumbsDown,
+  FaThumbsUp,
+  FaTrash,
+} from "react-icons/fa";
+
 import { commentAPI } from "../services/api";
-import { set } from "mongoose";
+
 function CommentCard({
   comment,
   editCommentText,
@@ -18,7 +25,7 @@ function CommentCard({
   handleCancelEdit,
 }) {
   const [avatarError, setAvatarError] = useState(
-    authUser?.avatar ? false : true
+    comment?.user?.avatar ? false : true
   );
   const [likesData, setLikesData] = useState({
     likes: comment?.likes || 0,
@@ -39,16 +46,17 @@ function CommentCard({
   }, [comment?.user?.avatar]);
 
   const getCommentLikeStatus = async (commentId) => {
+    if (!isLoggedIn) return;
     try {
       const response = await commentAPI.getCommentLikeStatus(commentId);
       const data = response.data;
-      setLikesData(data)
+      setLikesData(data);
     } catch (error) {
       console.error("Error fetching comment like status:", error);
     }
   };
   useEffect(() => {
-    if (comment) {
+    if (comment && isLoggedIn) {
       getCommentLikeStatus(comment.id);
     }
   }, [comment]);
@@ -58,6 +66,8 @@ function CommentCard({
         <img
           src={comment?.user.avatar}
           alt={comment?.user.username}
+          onError={() => setAvatarError(true)}
+          onLoad={() => setAvatarError(false)}
           className="w-10 h-10 object-cover rounded-full cursor-pointer"
         />
       ) : (
@@ -115,13 +125,17 @@ function CommentCard({
             <button
               onClick={() => handleCommentLike(comment.id, "like")}
               className={`flex items-center gap-1 transition-colors group `}>
-              {
-                likesData.userLiked
-                  
-                  ? <FaThumbsUp size={12} className="group-hover:scale-110 transition-transform" />
-                  :<FaRegThumbsUp size={12} className="group-hover:scale-110 transition-transform" />
-                  
-              }
+              {likesData.userLiked ? (
+                <FaThumbsUp
+                  size={12}
+                  className="group-hover:scale-110 transition-transform"
+                />
+              ) : (
+                <FaRegThumbsUp
+                  size={12}
+                  className="group-hover:scale-110 transition-transform"
+                />
+              )}
               {likesData.likes > 0 && (
                 <span className="text-xs font-medium">{likesData.likes}</span>
               )}
@@ -129,15 +143,17 @@ function CommentCard({
             <button
               onClick={() => handleCommentLike(comment.id, "dislike")}
               className={`transition-colors group`}>
-
-                 {
-                likesData.userDisliked
-                ? <FaThumbsDown size={12} className="group-hover:scale-110 transition-transform" />
-                  : <FaRegThumbsDown size={12} className="group-hover:scale-110 transition-transform" />
-                  
-                  
-              }
-              
+              {likesData.userDisliked ? (
+                <FaThumbsDown
+                  size={12}
+                  className="group-hover:scale-110 transition-transform"
+                />
+              ) : (
+                <FaRegThumbsDown
+                  size={12}
+                  className="group-hover:scale-110 transition-transform"
+                />
+              )}
             </button>
           </div>
           <button className="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors px-4 py-1 rounded-full hover:bg-gray-100">

@@ -30,8 +30,9 @@ API.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
+      console.log(error)
       removeToken();
-      window.location.href = "/signin";
+      // window.location.href = "/signin";
     }
     return Promise.reject(error);
   }

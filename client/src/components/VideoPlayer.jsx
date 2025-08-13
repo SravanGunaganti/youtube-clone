@@ -81,7 +81,6 @@ const VideoPlayer = () => {
     dislikes: 0,
     userLiked: false,
     userDisliked: false,
-
   });
 
   // Subscription state
@@ -187,7 +186,6 @@ const VideoPlayer = () => {
             name: data.channelName,
             subscribers: data.subscribers,
             avatar: data.avatar,
-            subscribers: data.subscribers,
             isVerified: data.isVerified,
           });
         };
@@ -209,7 +207,6 @@ const VideoPlayer = () => {
           subscribers: data.subscribers,
           isVerified: data.isVerified,
         });
-        // setSubscriberCount(data.subscribers);
 
         // Fetch user's like status if logged in
         if (isLoggedIn) {
@@ -268,14 +265,15 @@ const VideoPlayer = () => {
 
   useEffect(() => {
     const image = new Image();
-    image.src = authUser.avatar;
+    image.src = authUser?.avatar;
     image.onload = () => {
       setAuthAvatarError(false);
     };
     image.onerror = () => {
       setAuthAvatarError(true);
     };
-  }, [authUser.avatar]);
+  }, [authUser?.avatar]);
+
   // Fetch video like status
   const fetchVideoLikeStatus = async () => {
     try {
@@ -313,7 +311,9 @@ const VideoPlayer = () => {
         // Update the comment in the comments array
         setComments((prev) =>
           prev.map((comment) =>
-            comment.id === commentId ? response.data : comment
+            comment.id === commentId
+              ? { ...comment, text: response.data.text }
+              : comment
           )
         );
         setEditingComment(null);
@@ -330,9 +330,8 @@ const VideoPlayer = () => {
     setDeleteCommentId(commentId);
   };
 
-
-  const onConfirmDeleteComment = async() => {
-     try {
+  const onConfirmDeleteComment = async () => {
+    try {
       const response = await commentAPI.deleteComment(deleteCommentId);
 
       if (response.success) {
@@ -348,10 +347,10 @@ const VideoPlayer = () => {
     setDeleteCommentId(null);
   };
 
-  const handleClose = ()=>{
+  const handleClose = () => {
     setShowDeleteCommentModal(false);
     setDeleteCommentId(null);
-  }
+  };
 
   // Like/dislike comment
   const handleCommentLike = async (commentId, action) => {
@@ -521,7 +520,7 @@ const VideoPlayer = () => {
 
   return (
     <div className="max-w-full mx-auto bg-white min-h-screen">
-      <div className="flex flex-col xl:flex-row gap-6 xl:px-6 py-4">
+      <div className="flex flex-col xl:flex-row gap-6 xl:px-6 md:py-4">
         {/* Main Video Section */}
         <div className="flex-1 max-w-5xl">
           {/* Video Player */}
@@ -639,10 +638,12 @@ const VideoPlayer = () => {
                         <h3 className="font-medium text-base text-gray-900 cursor-pointer hover:text-gray-700 transition-colors">
                           {videoData?.channel?.name}
                         </h3>
-                        {videoData?.channel?.isVerified &&<IoCheckmarkCircleSharp
-                          size={16}
-                          className="text-gray-500"
-                        />}
+                        {videoData?.channel?.isVerified && (
+                          <IoCheckmarkCircleSharp
+                            size={16}
+                            className="text-gray-500"
+                          />
+                        )}
                       </Link>
                     </div>
                     <p className="text-sm text-gray-600 mt-0.5">
@@ -664,8 +665,10 @@ const VideoPlayer = () => {
                         <FaBell size={14} />
                         <span>Subscribed</span>
                       </div>
-                    ) : (
+                    ) : authUser ? (
                       "Subscribe"
+                    ) : (
+                      "Sign in to Subscribe"
                     )}
                   </button>
                 </div>
@@ -852,7 +855,6 @@ const VideoPlayer = () => {
                     handleCommentLike={handleCommentLike}
                     isLoggedIn={isLoggedIn}
                     authUser={authUser}
-
                   />
                 ))}
             </div>
@@ -915,12 +917,12 @@ const VideoPlayer = () => {
           </div>
         </div>
         {showDeleteCommentModal && (
-        <ConfirmModal
-          message="Are you sure you want to delete?"
-          onConfirm={onConfirmDeleteComment}
-          onCancel={handleClose}
-        />
-      )}
+          <ConfirmModal
+            message="Are you sure you want to delete?"
+            onConfirm={onConfirmDeleteComment}
+            onCancel={handleClose}
+          />
+        )}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import UserProfileDropdown from "./UserProfileDropdown";
 import EditProfileModal from "./EditProfileModal";
-import { NavContext } from "../App";
+import { NavContext } from "../App.jsx"
 import { useContext } from "react";
 import Overlay from "./Overlay";
 import { AiOutlineBell } from "react-icons/ai";
@@ -79,6 +79,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
         </button>
         {/* logo */}
         <div className="flex-none relative">
+          <Link to="/">
           <img
             src="https://www.gstatic.com/youtube/img/branding/youtubelogo/svg/youtubelogo.svg"
             alt="YouTube"
@@ -87,6 +88,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
           <span className="text-[10px] absolute top-3 text-gray-500 right-1">
             IN
           </span>
+          </Link>
         </div>
       </div>
       {/* search bar */}

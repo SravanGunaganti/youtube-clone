@@ -1,6 +1,5 @@
 import React, { lazy, Suspense } from "react";
-// import VideoCard from "./VideoCard";
-const VideoCard = lazy(() => import("./VideoCard"));
+import VideoCard from "./VideoCard";
 
 const GridLoader = () => (
   <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-4 p-4">
@@ -19,8 +18,6 @@ const GridLoader = () => (
     ))}
   </div>
 );
-
-
 
 const VideoGrid = ({ searchQuery, videos, loading, error, fetchVideos }) => {
   // Render loading state
@@ -61,9 +58,9 @@ const VideoGrid = ({ searchQuery, videos, loading, error, fetchVideos }) => {
 
   // Render video grid
   return (
-    <div className="max-w-[2096px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 min-[113.5rem]:grid-cols-4 gap-4 md:p-4">
+    <div className="w-full max-w-[2096px] flex-1 mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 min-[113.5rem]:grid-cols-4 gap-4 md:p-4">
       {videos.map((video) => (
-          <VideoCard key={video.id} video={video} />
+        <VideoCard key={video.id} video={video} />
       ))}
     </div>
   );

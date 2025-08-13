@@ -29,10 +29,10 @@ const UserProfileDropdown = ({
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-medium text-gray-900 truncate">
+            <h3 className="text-sm md:text-base font-medium text-gray-900 truncate">
               {user?.username}
             </h3>
-            <p className="text-xs text-gray-600 truncate">{user?.email}</p>
+            <p className="text-xs md:text-sm text-gray-600 truncate">{user?.email}</p>
             <Link
               to={`/channel/${user.channelId ? user.channelId : user.id}`}
               className=" flex items-center  py-2 text-blue-500 hover:text-blue-600  transition-colors text-sm">

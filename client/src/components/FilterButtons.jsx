@@ -38,7 +38,7 @@ const FilterButtons = ({ selectedCategory, categories, onCategoryChange }) => {
   };
 
   return (
-    categories.length>1 && (<div className="flex items-center gap-2  bg-white w-full mx-auto overflow-hidden max-w-[2048px] md:pr-4">
+ <div className="flex items-center gap-2  bg-white w-full mx-auto overflow-hidden max-w-[2048px] md:pr-4">
       {/* Scroll left button */}
       <button
         onClick={() => scroll("left")}
@@ -48,7 +48,7 @@ const FilterButtons = ({ selectedCategory, categories, onCategoryChange }) => {
       {/* Categories */}
       <div
         ref={scrollRef}
-        className="flex justify-start gap-3 max-[350px]:text-xs text-sm md:text-base  max-w-full overflow-x-auto scrollbar-hide">
+        className="flex justify-start gap-3 max-[350px]:text-xs text-sm md:text-base  max-w-full overflow-x-auto scrollbar-hide hide-scrollbar">
         {categories?.map((cat) => (
           <button
             key={`catbtn${cat}`}
@@ -70,7 +70,7 @@ const FilterButtons = ({ selectedCategory, categories, onCategoryChange }) => {
         className="max-[350px]:text-xl bg-white border brder-gray-400 text-gray-600 right-0 rounded-full  z-10 text-2xl mr-2">
         <BiChevronRight />
       </button>
-    </div>)
+    </div>
   );
 };
 

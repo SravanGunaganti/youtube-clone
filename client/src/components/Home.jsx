@@ -99,16 +99,8 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <div className="relative w-full">
-          {/* Filter Buttons */}
-          <div disabled className="disabled-pointer-events w-full py-2 backdrop-opacity-0 opactity-0">
-           <FilterButtons
-              className="sticky"
-              categories={categories}
-              selectedCategory={selectedCategory}
-              onCategoryChange={handleCategoryChange}
-            />
-          </div>
+        <div className="relative w-full pt-14">
+         
 
           <div
             className={`${
