@@ -31,6 +31,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
     if (searchQuery.trim() && onSearch) {
       onSearch(searchQuery);
     }
+    setSearchQuery("");
   };
 
   // function to handle sign out
@@ -97,6 +98,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch(e)}
               className="outline-0 rounded-l-3xl w-full px-4"
             />
             <div className="bg-gray-100 hover:bg-gray-200 h-full flex p-2 justify-center items-center rounded-r-3xl">
@@ -117,7 +119,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
         <button
           onClick={() => handleShowSearch(true)}
           className="h-full flex justify-center items-center">
-          <CiSearch fontSize={20} />
+          <CiSearch fontSize={24} />
         </button>
       </div>
       {/* mobile search bar */}
@@ -135,6 +137,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
                 placeholder="Search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch(e)}
                 className="outline-0 rounded-l-3xl w-full px-4"
               />
               <div className="bg-gray-100 hover:bg-gray-200 h-full flex p-2 justify-center items-center rounded-r-3xl">

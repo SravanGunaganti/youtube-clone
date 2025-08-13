@@ -4,15 +4,20 @@ import { PiSignOutBold } from "react-icons/pi";
 import { MdEdit, MdSettings } from "react-icons/md";
 import { BsCameraVideo } from "react-icons/bs";
 import { getInitial } from "../utils/utilityFunctions";
-const UserProfileDropdown = ({ user, onLogout, onEditProfile,avatarError }) => {
-  console.log("avatar",avatarError)
+const UserProfileDropdown = ({
+  user,
+  onLogout,
+  onEditProfile,
+  avatarError,
+}) => {
+  console.log("avatar", avatarError);
   if (!user) return null;
   return (
     <div className="absolute right-4 top-16 w-72 bg-white shadow-lg rounded-xl border border-gray-200 z-50 overflow-hidden">
       {/* Header Section - YouTube Style */}
       <div className="p-4">
-        <div className="flex items-center gap-3">
-          {user?.avatar && !avatarError ?(
+        <div className="flex items-start gap-3">
+          {user?.avatar && !avatarError ? (
             <img
               src={user?.avatar}
               alt="profile"
@@ -28,6 +33,12 @@ const UserProfileDropdown = ({ user, onLogout, onEditProfile,avatarError }) => {
               {user?.username}
             </h3>
             <p className="text-xs text-gray-600 truncate">{user?.email}</p>
+            <Link
+              to={`/channel/${user.channelId ? user.channelId : user.id}`}
+              className=" flex items-center  py-2 text-blue-500 hover:text-blue-600  transition-colors text-sm">
+              {/* <BsCameraVideo size={20} className="text-gray-600" /> */}
+              <span>View your channel</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -42,13 +53,6 @@ const UserProfileDropdown = ({ user, onLogout, onEditProfile,avatarError }) => {
           <MdEdit size={20} className="text-gray-600" />
           <span>Edit Profile</span>
         </button>
-
-        <Link
-          to={`/channel/${user.channelId ? user.channelId : user.id}`}
-          className="w-full flex items-center gap-4 px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors text-sm">
-          <BsCameraVideo size={20} className="text-gray-600" />
-          <span>View your channel</span>
-        </Link>
 
         <button className="w-full flex items-center gap-4 px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors text-sm">
           <MdSettings size={20} className="text-gray-600" />
