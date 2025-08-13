@@ -166,6 +166,11 @@ export const commentAPI = {
   toggleCommentLike: async (commentId, action) => {
     return await API.put(`/comments/${commentId}/like`, { action });
   },
+
+  // Get user's like status for a comment
+  getCommentLikeStatus: async (commentId) => {
+    return await API.get(`/comments/${commentId}/like-status`);
+  },
 };
 
 //  USER APIs FOR AUTH AND PROFILE

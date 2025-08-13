@@ -116,9 +116,9 @@ const ChannelInfo = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-600 md:mb-3">
-            <span>{formatNumber(subscriberCount)} subscribers</span>
+            <span>{subscriberCount>0 ? formatNumber(subscriberCount):"No"} subscribers</span>
             <span>•</span>
-            <span>{videos?.length || 0} videos</span>
+            <span>{videos?.length>0?videos.length: "No"} videos</span>
             {channelData?.totalViews && (
               <>
                 <span>•</span>

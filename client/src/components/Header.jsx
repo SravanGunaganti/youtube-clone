@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import UserProfileDropdown from "./UserProfileDropdown";
 import EditProfileModal from "./EditProfileModal";
@@ -18,7 +18,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const { showProfile, setShowProfile } = useContext(NavContext);
-  const [avatarError, setAvatarError] = useState(false);
+  const [avatarError, setAvatarError] = useState(true);
   const { authUser,logout } = useAuth();
 
   // useNavigate hook to navigate
@@ -55,6 +55,17 @@ const Header = ({ onMenuToggle, onSearch }) => {
     }
     setShowSearch(value);
   };
+
+  useEffect(() => {
+    const image = new Image();
+    image.onload = () => {
+      setAvatarError(false);
+    };
+    image.onerror = () => {
+      setAvatarError(true);
+    };
+    image.src = authUser?.avatar;
+  }, [authUser?.avatar]);
   return (
     // header
     <header className="fixed w-screen top-0 z-50 flex justify-between items-center px-4 h-14 bg-white gap-2">
@@ -160,12 +171,13 @@ const Header = ({ onMenuToggle, onSearch }) => {
                 <img
                   src={authUser.avatar}
                   onError={() => setAvatarError(true)}
+                  onLoad={() => setAvatarError(false)}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
                 <div className="w-10 h-10 flex justify-center items-center rounded-full bg-blue-100 font-semibold">
-                  {authUser?.username?.charAt(0)?.toUpperCase()}
+                  {authUser?.username.charAt(0)?.toUpperCase()}
                 </div>
               )}
             </button>
@@ -175,6 +187,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
                 user={authUser}
                 onLogout={handleSignOut}
                 onEditProfile={handleEditProfile}
+                avatarError={avatarError}
               />
             )}
           </div>
@@ -192,6 +205,7 @@ const Header = ({ onMenuToggle, onSearch }) => {
         isOpen={showEditProfileModal}
         onClose={() => setShowEditProfileModal(false)}
         user={authUser}
+        
       />
     </header>
   );

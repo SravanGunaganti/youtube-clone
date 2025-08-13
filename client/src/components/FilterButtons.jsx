@@ -4,6 +4,8 @@ import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 const FilterButtons = ({ selectedCategory, categories, onCategoryChange }) => {
   const itemRefs = React.useRef([]);
   const scrollRef = React.useRef(null);
+  const [hideLeft , setHideLeft] = React.useState(false);
+
 
   // Scroll to selected category
   useEffect(() => {
@@ -22,10 +24,21 @@ const FilterButtons = ({ selectedCategory, categories, onCategoryChange }) => {
         behavior: "smooth",
       });
     }
+    // If scroll reaches right side end hide righr icon and display left icon if scroll back to initial position hide left icon and display righ icon
+    if (
+      scrollRef.current.scrollLeft ===
+      scrollRef.current.scrollWidth - scrollRef.current.offsetWidth
+    ) {
+      setHideLeft(false);
+    } else if (
+      scrollRef.current.scrollLeft === 0
+    ) {
+      setHideLeft(true);
+    }
   };
 
   return (
-    <div className="flex items-center gap-2  bg-white w-full mx-auto overflow-hidden max-w-[2048px] md:pr-4">
+    categories.length>1 && (<div className="flex items-center gap-2  bg-white w-full mx-auto overflow-hidden max-w-[2048px] md:pr-4">
       {/* Scroll left button */}
       <button
         onClick={() => scroll("left")}
@@ -57,7 +70,7 @@ const FilterButtons = ({ selectedCategory, categories, onCategoryChange }) => {
         className="max-[350px]:text-xl bg-white border brder-gray-400 text-gray-600 right-0 rounded-full  z-10 text-2xl mr-2">
         <BiChevronRight />
       </button>
-    </div>
+    </div>)
   );
 };
 

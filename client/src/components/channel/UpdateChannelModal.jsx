@@ -208,11 +208,11 @@ const UpdateChannelModal = ({ channelData, onClose, onSubmit }) => {
                 />
               </div>
               {/* Buttons  for cancel and update */}
-              <div className="flex gap-3">
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                  className=" px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                   Cancel
                 </button>
                 <button
@@ -222,7 +222,7 @@ const UpdateChannelModal = ({ channelData, onClose, onSubmit }) => {
                     bannerError || avatarError
                       ? "opacity-50 cursor-not-allowed"
                       : ""
-                  } flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors`}>
+                  } flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors`}>
                   Save Chanages
                 </button>
               </div>

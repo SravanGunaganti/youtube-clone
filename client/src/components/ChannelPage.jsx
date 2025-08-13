@@ -12,6 +12,7 @@ import CreateChannelModal from "./channel/CreateChannelModal.jsx";
 import UpdateChannelModal from "./channel/UpdateChannelModal.jsx";
 import UpdateVideoModal from "./channel/UpdateVideoModal.jsx";
 import ChannelInfo from "./channel/ChannelInfo.jsx";
+import ConfirmModal from "./ConfirmModal.jsx";
 
 const ChannelPage = () => {
   const { channelId } = useParams();
@@ -29,12 +30,15 @@ const ChannelPage = () => {
   const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const [showEditChannelModal, setShowEditChannelModal] = useState(false);
   const [editingVideo, setEditingVideo] = useState(null);
+
+  const [showDeleteVideoModal, setShowDeleteVideoModal] = useState(false);
+  const [videoDeleteId, setVideoDeleteId] = useState(null);
+  const [bannerError, setBannerError] = useState(true);
   const navigate = useNavigate();
 
   const startEditChannel = () => {
     setShowEditChannelModal(true);
   };
-
   const handleUpdateChannel = async (editChannelData) => {
     try {
       const response = await channelAPI.updateChannel(
@@ -52,6 +56,22 @@ const ChannelPage = () => {
       console.error("Error updating channel:", handleAPIError(error));
     }
   };
+
+  useEffect(()=>{
+    if (channelData?.channelBanner) {
+      const image = new Image();
+      image.onload = () => {
+        setBannerError(false);
+      };
+      image.onerror = () => {
+        setBannerError(true);
+      };
+      image.src = channelData?.channelBanner;
+    }else{
+      setBannerError(true);
+    }
+
+  },[channelData?.bannerUrl])
 
   const handleSubscribe = () => {
     setChannelData((prev) => ({
@@ -124,18 +144,24 @@ const ChannelPage = () => {
     if (!isLoggedIn || (!isOwner && video?.uploader !== authUser.id))
       return toast.error("Unauthorized");
 
-    if (window.confirm("Are you sure you want to delete this video?")) {
-      try {
-        const response = await videoAPI.deleteVideo(videoId);
+    setShowDeleteVideoModal(true);
+    setVideoDeleteId(videoId);
+  };
+
+  const onConfirmnDeleteVideo = async () => {
+    try {
+        const response = await videoAPI.deleteVideo(videoDeleteId);
         if (response.success) {
-          setVideos(videos.filter((v) => v._id !== videoId));
+          setVideos(videos.filter((v) => v._id !== videoDeleteId));
           toast.success("Video deleted successfully!");
         }
       } catch (error) {
         toast.error("Failed to delete video");
         console.error("Error deleting video:", handleAPIError(error));
       }
-    }
+
+    setShowDeleteVideoModal(false);
+    setVideoDeleteId(null);
   };
 
   const startEditVideo = (video) => {
@@ -252,18 +278,16 @@ const ChannelPage = () => {
   return (
     <div className="w-full max-w-[1360px] bg-white mx-auto ">
       {/* Banner */}
-      {channelData?.channelBanner &&<div className={`w-full flex items-center justify-center rounded-lg h-32 sm:h-48 lg:h-60  p-4`}>
+      {channelData?.channelBanner&& <div className={`${bannerError && 'hidden'}  w-full flex items-center justify-center rounded-lg h-32 sm:h-48 lg:h-60  p-4`}>
           <img
             src={channelData?.channelBanner}
-            onError={(e) => {
-              e.target.src =
-                "https://yt3.googleusercontent.com/qadmKywk8TQsrBFmbrU5EcFtOZYju26eaRUYZFl90pXJIWlmKDc2bcu-XaLy1mb0bNxPYJZGbw=w1707-fcrop64=1,00005a57ffffa5a8-k-c0xffffffff-no-nd-rj";
-            }}
+            onError={()=>setBannerError(true)}
+            onLoad={()=>setBannerError(false)}
             alt="Channel banner"
             className="w-full rounded-xl h-full object-cover"
           />  
       </div>}
-       {(isLoggedIn && isOwner && !channelData?.channelBanner) && <div className={`w-full  flex items-center justify-center rounded-xl h-32 sm:h-48 lg:h-60 p-4`}><div onClick={startEditChannel} className={`w-full border cursor-pointer border-gray-300 bg-gray-100 rounded-xl h-full text-lg md:text-3xl  font-semibold md:font-bold flex items-center justify-center`}>
+       {(isLoggedIn && isOwner &&  bannerError) && <div className={`w-full  flex items-center justify-center rounded-xl h-32 sm:h-48 lg:h-60 p-4`}><div onClick={startEditChannel} className={`w-full border cursor-pointer border-gray-300 bg-gray-100 rounded-xl h-full text-lg md:text-3xl  font-semibold md:font-bold flex items-center justify-center`}>
           Add a banner to your channel
         </div>
         </div>}
@@ -311,6 +335,14 @@ const ChannelPage = () => {
           channelData={channelData}
           onClose={() => setShowEditChannelModal(false)}
           onSubmit={handleUpdateChannel}
+        />
+      )}
+
+       {showDeleteVideoModal && (
+        <ConfirmModal
+          message="Are you sure you want to delete?"
+          onConfirm={onConfirmnDeleteVideo}
+          onCancel={() => {setShowDeleteVideoModal(false);setVideoDeleteId(null)}}
         />
       )}
     </div>

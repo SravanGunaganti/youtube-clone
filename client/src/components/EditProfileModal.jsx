@@ -40,7 +40,20 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
 
     // Update avatar preview
     if (name === "avatar") {
-      setAvatarError(false);
+      setAvatarError(true);
+    }
+
+    // Update avatar error
+    if (name === "avatar") {
+      const image = new Image(value);
+      image.onload = () => {
+        
+        setAvatarError(false);
+      };
+      image.onerror = () => {
+        setAvatarError(true);
+      };
+      image.src = value;
     }
   };
 
@@ -69,11 +82,18 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
     } finally {
       setIsLoading(false);
     }
-  };
-  // Handle avatar error
-  const handleAvatarError = () => {
-    setAvatarError(true);
-  };
+  };  
+
+  useEffect(()=>{
+    const image = new Image(formData?.avatar);
+    image.onload = () => {
+      setAvatarError(false);
+    };
+    image.onerror = () => {
+      setAvatarError(true);
+    };
+    image.src = formData?.avatar;
+  },[formData?.avatar])
 
   if (!isOpen) return null;
 
@@ -99,12 +119,13 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
             {/* Avatar Section */}
             <div className="flex flex-col items-center mb-6">
               <div className="relative mb-4">
-                {!avatarError ? (
+                {formData?.avatar && !avatarError  ? (
                   <img
                     src={formData.avatar}
                     alt="Profile preview"
                     className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
-                    onError={handleAvatarError}
+                    onError={()=>setAvatarError(true)}
+                    onLoad={()=>setAvatarError(false)}
                   />
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center font-bold text-white text-2xl border-4 border-gray-200">
@@ -183,7 +204,7 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                className="flex px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                 disabled={isLoading}>
                 Cancel
               </button>

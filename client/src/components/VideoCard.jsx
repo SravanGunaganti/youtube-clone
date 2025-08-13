@@ -5,6 +5,7 @@ import {
   getInitial,
   getTimeAgo,
 } from "../utils/utilityFunctions";
+import { IoCheckmarkCircleSharp } from "react-icons/io5";
 
 const VideoCard = ({ video }) => {
   const videoRef = useRef(null);
@@ -104,10 +105,15 @@ const VideoCard = ({ video }) => {
 
           {/* Channel name with link */}
           <div className="flex text-xs sm:text-sm md:flex-col gap-0.5 md:items-start items-center text-gray-600">
-            <Link to={`/channel/${video.channel.id}`} className="">
+            <Link
+              to={`/channel/${video.channel.id}`}
+              className="flex items-center gap-1.5">
               <p className=" text-gray-600 font-normal hover:text-gray-900 cursor-pointer">
                 {video.channel.name || "Unknown Channel"}
               </p>
+              {video.channel.isVerified && (
+                <IoCheckmarkCircleSharp size={16} className="text-gray-500" />
+              )}
             </Link>
             <span className="">
               <span className="mx-1 md:hidden">•</span>

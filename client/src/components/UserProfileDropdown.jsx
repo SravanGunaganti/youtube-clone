@@ -4,16 +4,17 @@ import { PiSignOutBold } from "react-icons/pi";
 import { MdEdit, MdSettings } from "react-icons/md";
 import { BsCameraVideo } from "react-icons/bs";
 import { getInitial } from "../utils/utilityFunctions";
-const UserProfileDropdown = ({ user, onLogout, onEditProfile }) => {
+const UserProfileDropdown = ({ user, onLogout, onEditProfile,avatarError }) => {
+  console.log("avatar",avatarError)
   if (!user) return null;
   return (
     <div className="absolute right-4 top-16 w-72 bg-white shadow-lg rounded-xl border border-gray-200 z-50 overflow-hidden">
       {/* Header Section - YouTube Style */}
       <div className="p-4">
         <div className="flex items-center gap-3">
-          {user?.avatar ? (
+          {user?.avatar && !avatarError ?(
             <img
-              src={user.avatar}
+              src={user?.avatar}
               alt="profile"
               className="w-10 h-10 rounded-full object-cover"
             />

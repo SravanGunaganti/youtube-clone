@@ -45,6 +45,21 @@ export default function App() {
     }
   };
 
+  const handleHideMenus = () => {
+    if (isSidebarOpen) {
+      setIsSidebarOpen(false);
+    }
+    if (showProfile) {
+      setShowProfile(false);
+    }
+  }
+  useEffect(() => {
+    document.getElementsByTagName("main")[0].addEventListener("click", handleHideMenus);
+
+    return () => {
+      document.getElementsByTagName("main")[0].removeEventListener("click", handleHideMenus);
+    };
+  }, [isSidebarOpen, showProfile]);
   return (
     // context provider
     <NavContext.Provider

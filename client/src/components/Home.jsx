@@ -101,8 +101,8 @@ export default function Home() {
       ) : (
         <div className="relative w-full">
           {/* Filter Buttons */}
-          <div disabled className="disabled-pointer-events py-2 opacity-0">
-            <FilterButtons
+          <div disabled className="disabled-pointer-events w-full py-2 backdrop-opacity-0 opactity-0">
+           <FilterButtons
               className="sticky"
               categories={categories}
               selectedCategory={selectedCategory}
