@@ -348,61 +348,57 @@ export const channelExists = async (req, res, next) => {
     next(error);
   }
 };
- // Toggle subscribe
+// Toggle subscribe
 export const toggleSubscribe = async (req, res, next) => {
-  
-  
   try {
     const { channelId } = req.params;
     const userId = req.user._id;
 
     // 1. Find the channel
-    const channel = await Channel.findById(channelId)
+    const channel = await Channel.findById(channelId);
     if (!channel) {
       return sendErrorResponse(
         res,
         404,
-        'Channel not found',
-        'The specified channel does not exist.'
+        "Channel not found",
+        "The specified channel does not exist."
       );
     }
 
     // Check if user is trying to subscribe to their own channel
     if (channel.owner.toString() === userId.toString()) {
-
       return sendErrorResponse(
         res,
         400,
-        'Invalid operation',
-        'You cannot subscribe to your own channel.'
+        "Invalid operation",
+        "You cannot subscribe to your own channel."
       );
     }
 
     // Check if user is already subscribed
     const isSubscribed = channel.subscribedBy.includes(userId);
-    
-      if (isSubscribed) {
-        // Remove subscription
-        channel.subscribedBy.pull(userId);
-        channel.subscribers = Math.max(0, channel.subscribers - 1);
-      } else {
-        // Add subscription
-        channel.subscribedBy.push(userId);
-        channel.subscribers += 1;
-      }
-      await channel.save();
+
+    if (isSubscribed) {
+      // Remove subscription
+      channel.subscribedBy.pull(userId);
+      channel.subscribers = Math.max(0, channel.subscribers - 1);
+    } else {
+      // Add subscription
+      channel.subscribedBy.push(userId);
+      channel.subscribers += 1;
+    }
+    await channel.save();
     // Return updated subscription status,subscribers
     return sendSuccessResponse(
       res,
       200,
-      { 
-        isSubscribed: !isSubscribed, 
-        subscribers: channel.subscribers 
+      {
+        isSubscribed: !isSubscribed,
+        subscribers: channel.subscribers,
       },
-      isSubscribed ? 'Unsubscribed successfully' : 'Subscribed successfully'
+      isSubscribed ? "Unsubscribed successfully" : "Subscribed successfully"
     );
   } catch (error) {
-    
     next(error);
   }
 };
@@ -419,23 +415,23 @@ export const checkSubscriptionStatus = async (req, res, next) => {
       return sendErrorResponse(
         res,
         404,
-        'Channel not found',
-        'The specified channel does not exist.'
+        "Channel not found",
+        "The specified channel does not exist."
       );
     }
 
     // Check if user is subscribed
     const isSubscribed = channel.subscribedBy.includes(userId);
-    
+
     // Return subscription status
     return sendSuccessResponse(
       res,
       200,
-      { 
+      {
         isSubscribed,
-        subscribers: channel.subscribers 
+        subscribers: channel.subscribers,
       },
-      'Subscription status retrieved successfully'
+      "Subscription status retrieved successfully"
     );
   } catch (error) {
     next(error);
