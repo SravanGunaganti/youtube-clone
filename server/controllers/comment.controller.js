@@ -1,4 +1,5 @@
 // import models
+import { use } from "react";
 import Comment from "../models/Comment.model.js";
 import Video from "../models/Video.model.js";
 
@@ -53,7 +54,6 @@ export const addComment = async (req, res, next) => {
     // Populate user info
     await comment.populate("userId", "username avatar");
 
-
     return sendSuccessResponse(
       res,
       201,
@@ -67,7 +67,7 @@ export const addComment = async (req, res, next) => {
         user: {
           id: comment.userId._id,
           username: comment.userId.username,
-          avatar: comment.userId.avatar
+          avatar: comment.userId.avatar,
         },
       },
       "Comment added successfully"
@@ -113,7 +113,7 @@ export const getVideoComments = async (req, res, next) => {
           user: {
             id: comment.userId._id,
             username: comment.userId.username,
-            avatar: comment.userId.avatar
+            avatar: comment.userId.avatar,
           },
         })),
       },
@@ -189,6 +189,8 @@ export const updateComment = async (req, res, next) => {
         timestamp: comment.timestamp,
         likes: comment.likes,
         dislikes: comment.dislikes,
+        userLiked: comment.likedBy.includes(userId),
+        userDisliked: comment.dislikedBy.includes(userId),
         isEdited: comment.isEdited,
         editedAt: comment.editedAt,
         user: {
@@ -324,6 +326,42 @@ export const toggleCommentLike = async (req, res, next) => {
         userDisliked: comment.dislikedBy.includes(userId),
       },
       `Comment ${action}d successfully`
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getCommentLikeStatus = async (req, res, next) => {
+  try {
+    const { commentId } = req.params;
+    const userId = req.user._id;
+
+    const comment = await Comment.findById(commentId).select(
+      "likes dislikes likedBy dislikedBy"
+    );
+    if (!comment) {
+      return sendErrorResponse(
+        res,
+        404,
+        "Comment Not Found",
+        "The requested comment does not exist."
+      );
+    }
+
+    const userLiked = comment.likedBy.includes(userId);
+    const userDisliked = comment.dislikedBy.includes(userId);
+
+    return sendSuccessResponse(
+      res,
+      200,
+      {
+        likes: comment.likes,
+        dislikes: comment.dislikes,
+        userLiked,
+        userDisliked,
+      },
+      "Comment like status retrieved successfully"
     );
   } catch (error) {
     next(error);

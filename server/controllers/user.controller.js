@@ -8,7 +8,7 @@ import { sendSuccessResponse } from "../utils/sendSuccessResponse.js";
 // Controller function to handle user registration
 export const registerUser = async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, avatar } = req.body;
 
     // Check if email is existing in the database
 
@@ -26,16 +26,18 @@ export const registerUser = async (req, res, next) => {
       username,
       email,
       password,
+      avatar,
     });
 
     //Sending a success response with user details
     return sendSuccessResponse(
       res,
-      201,
+      200,
       {
         id: user._id,
         username: user.username,
         email: user.email,
+        avatar: user.avatar,
       },
       "User Registered Successfully"
     );

@@ -3,7 +3,6 @@ import Channel from "../models/Channel.model.js";
 import { sendErrorResponse } from "../utils/sendErrorResponse.js";
 import { sendSuccessResponse } from "../utils/sendSuccessResponse.js";
 
-
 // Create a new video
 export const createVideo = async (req, res, next) => {
   try {
@@ -98,7 +97,10 @@ export const getVideo = async (req, res, next) => {
     const { videoId } = req.params;
 
     const video = await Video.findById(videoId)
-      .populate("channelId", "channelName channelBanner owner subscribers avatar isVerified")
+      .populate(
+        "channelId",
+        "channelName channelBanner owner subscribers avatar isVerified"
+      )
       .populate("uploader", "username")
       .populate("channelId.owner", "username");
 
@@ -128,6 +130,7 @@ export const getVideo = async (req, res, next) => {
         views: video.views + 1,
         likes: video.likes,
         dislikes: video.dislikes,
+
         channel: {
           id: video.channelId._id,
           name: video.channelId.channelName,
@@ -169,7 +172,7 @@ export const getAllVideos = async (req, res, next) => {
         "title description thumbnailUrl videoUrl views likes uploadDate category"
       )
       .sort({ uploadDate: -1 });
-    
+
     // Return videos
     return sendSuccessResponse(
       res,
@@ -189,7 +192,7 @@ export const getAllVideos = async (req, res, next) => {
             id: video.channelId._id,
             name: video.channelId.channelName,
             avatar: video.channelId.avatar,
-            isVerified: video.channelId.isVerified
+            isVerified: video.channelId.isVerified,
           },
           uploader: {
             id: video.uploader._id,
@@ -239,12 +242,12 @@ export const updateVideo = async (req, res, next) => {
         ...(title && { title: title.trim() }),
         ...(description && { description: description.trim() }),
         ...(thumbnailUrl && { thumbnailUrl }),
-        ...(category && { category })
+        ...(category && { category }),
       },
       { new: true, runValidators: true }
     ).populate([
-      { path: 'channelId', select: 'channelName avatar isVerified' },
-      { path: 'uploader', select: 'username' }
+      { path: "channelId", select: "channelName avatar isVerified" },
+      { path: "uploader", select: "username" },
     ]);
 
     // Return updated video
@@ -265,7 +268,7 @@ export const updateVideo = async (req, res, next) => {
           id: updatedVideo.channelId._id,
           name: updatedVideo.channelId.channelName,
           avatar: updatedVideo.channelId.avatar,
-          isVerified: updatedVideo.channelId.isVerified
+          isVerified: updatedVideo.channelId.isVerified,
         },
         uploader: {
           id: updatedVideo.uploader._id,
@@ -486,14 +489,8 @@ export const videoExists = async (req, res, next) => {
         "The requested video does not exist."
       );
     }
-    return sendSuccessResponse(
-      res,
-      200,
-      { exists: true },
-      "Video exists"
-    );
+    return sendSuccessResponse(res, 200, { exists: true }, "Video exists");
   } catch (error) {
     next(error);
   }
 };
-
