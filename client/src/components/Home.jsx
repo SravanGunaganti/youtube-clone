@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import FilterButtons from "./FilterButtons";
 import VideoGrid from "./VideoGrid";
-import { NavContext } from "../App.jsx";
+import { NavContext } from "../context/NavContext";
 import { useAuth } from "../context/AuthContext";
 import { videoAPI , handleAPIError} from "../services/api";
 import useActivePath from "../helpers/useActivePath.js";

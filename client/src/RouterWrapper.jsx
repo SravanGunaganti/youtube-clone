@@ -57,7 +57,10 @@ export default function RouterWrapper() {
               await API.get(`/videos/${params.videoId}/exist`);
               return null;
             } catch (error) {
-              throw new Response(null, { status: 404 });
+              if (error?.response?.data.statusCode === 404) return null;
+              throw new Response(null, {
+                status: error?.response?.data.statusCode,
+              });
             }
           },
         },

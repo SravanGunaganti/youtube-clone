@@ -6,8 +6,6 @@ import {
   getInitial,
 } from "../utils/utilityFunctions";
 import {
-  FaPlay,
-  FaPause,
   FaVolumeUp,
   FaVolumeMute,
   FaExpand,
@@ -15,14 +13,10 @@ import {
   FaThumbsUp,
   FaThumbsDown,
   FaBell,
-  FaShare,
-  FaDownload,
   FaFlag,
   FaEllipsisH,
   FaRegThumbsUp,
   FaRegThumbsDown,
-  FaEdit,
-  FaTrash,
 } from "react-icons/fa";
 import {
   MdMoreVert,
@@ -35,12 +29,7 @@ import {
 } from "react-icons/md";
 import { IoCheckmarkCircleSharp } from "react-icons/io5";
 import { BiLike, BiDislike, BiShare, BiPause } from "react-icons/bi";
-import {
-  RiDownloadLine,
-  RiPauseLargeFill,
-  RiPauseLargeLine,
-  RiScissorsLine,
-} from "react-icons/ri";
+import { RiDownloadLine, RiScissorsLine } from "react-icons/ri";
 import {
   videoAPI,
   commentAPI,
@@ -48,8 +37,7 @@ import {
   handleAPIError,
 } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-import { PiPauseBold } from "react-icons/pi";
-import { BsPauseBtnFill, BsPauseFill, BsPlayFill } from "react-icons/bs";
+import { BsPlayFill } from "react-icons/bs";
 import { toast } from "react-toastify";
 
 import CommentCard from "./CommentCard";
@@ -98,7 +86,16 @@ const VideoPlayer = () => {
   const [showDescription, setShowDescription] = useState(false);
   const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false);
   const [deleteCommentId, setDeleteCommentId] = useState(null);
-
+  const [poster, setPoster] = useState(
+    "https://i.ytimg.com/vi/ScMzIvxBSi4/hqdefault.jpg"
+  );
+  useEffect(() => {
+    const img = new Image();
+    img.src = videoData.thumbnailUrl;
+    img.onload = () => setPoster(img.src);
+    img.onerror = () =>
+      setPoster("https://i.ytimg.com/vi/ScMzIvxBSi4/hqdefault.jpg");
+  }, [videoData.thumbnailUrl]);
   // Check subscription status
   const checkSubscriptionStatus = async (channelId) => {
     if (!isLoggedIn || authUser.channelId === channelId) return;
@@ -534,7 +531,10 @@ const VideoPlayer = () => {
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               onClick={togglePlay}
-              poster={videoData.thumbnailUrl}
+              poster={poster}
+              onError={(e) =>
+                (e.target.src = `https://filesamples.com/samples/video/mp4/sample_640x360.mp4`)
+              }
               preload="metadata"
               src={`${videoData.videoUrl}`}>
               <source src={`${videoData.videoUrl}`} type="video/mp4" />

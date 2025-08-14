@@ -7,9 +7,9 @@ import "./index.css";
 import { useState, createContext, useContext, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import useActivePath from "./helpers/useActivePath.js";
+import { NavContext } from "./context/NavContext.jsx";
 
 // Created context to pass data between components
-export const NavContext = createContext({});
 
 export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -54,10 +54,10 @@ export default function App() {
     }
   }
   useEffect(() => {
-    document.getElementsByTagName("main")[0].addEventListener("click", handleHideMenus);
+    document.getElementsByTagName("main")[0]?.addEventListener("click", handleHideMenus);
 
     return () => {
-      document.getElementsByTagName("main")[0].removeEventListener("click", handleHideMenus);
+      document.getElementsByTagName("main")[0]?.removeEventListener("click", handleHideMenus);
     };
   }, [isSidebarOpen, showProfile]);
   return (

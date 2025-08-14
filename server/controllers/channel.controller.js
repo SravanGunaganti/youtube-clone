@@ -15,6 +15,18 @@ export const createChannel = async (req, res, next) => {
 
     // Check if user already has a channel
     const existingChannel = await Channel.findOne({ owner: userId });
+    const existingChannelName = await Channel.findOne({
+      channelName: channelName.trim(),
+    });
+
+    if (existingChannelName) {
+      return sendErrorResponse(
+        res,
+        409,
+        "Channel Name Already Taken",
+        "Channel name already exists. Please choose a different channel name."
+      );
+    }
     if (existingChannel) {
       return sendErrorResponse(
         res,
@@ -25,7 +37,7 @@ export const createChannel = async (req, res, next) => {
     }
 
     // Validate required fields
-    if (!channelName || !description || !avatar) {
+    if (!channelName || !description) {
       return sendErrorResponse(
         res,
         400,
@@ -39,7 +51,7 @@ export const createChannel = async (req, res, next) => {
       channelName: channelName.trim(),
       description: description.trim(),
       owner: userId,
-      avatar: avatar,
+      avatar: avatar?.trim() || null,
     });
 
     // Populate owner information
@@ -95,7 +107,6 @@ export const getChannel = async (req, res, next) => {
       );
     }
 
-    // Return channel
     return sendSuccessResponse(
       res,
       200,
@@ -136,13 +147,8 @@ export const getMyChannel = async (req, res, next) => {
         select:
           "title thumbnailUrl uploader views likes dislikes uploadDate description",
         options: { sort: { uploadDate: -1 } },
-      });
-    if (channel && channel.videos) {
-      channel.videos = channel.videos.map((video) => ({
-        ...video.toObject(),
-        id: video._id,
-      }));
-    }
+      })
+      .populate("videos.uploader", "username avatar");
 
     // Check if channel exists
     if (!channel) {
@@ -207,6 +213,19 @@ export const updateChannel = async (req, res, next) => {
         403,
         "Access Denied",
         "You can only update your own channel."
+      );
+    }
+
+    // Check if channel name is already taken
+    const existingChannel = await Channel.findOne({
+      channelName: channelName.trim(),
+    });
+    if (existingChannel && existingChannel._id.toString() !== channelId) {
+      return sendErrorResponse(
+        res,
+        409,
+        "Channel Name Already Taken",
+        "Channel name already exists. Please choose a different channel name."
       );
     }
 

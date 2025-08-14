@@ -34,7 +34,6 @@ export const getUserFromToken = async () => {
     return null;
   } catch (error) {
     removeToken();
-    console.error("Error decoding token", error);
     return null;
   }
 };

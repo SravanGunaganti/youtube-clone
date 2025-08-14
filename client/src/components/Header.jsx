@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import UserProfileDropdown from "./UserProfileDropdown";
 import EditProfileModal from "./EditProfileModal";
-import { NavContext } from "../App.jsx"
+import { NavContext } from "../context/NavContext";
 import { useContext } from "react";
 import Overlay from "./Overlay";
 import { AiOutlineBell } from "react-icons/ai";

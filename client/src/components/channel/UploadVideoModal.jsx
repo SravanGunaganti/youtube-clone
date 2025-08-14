@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { categories } from "../../constants/categories";
 import { toast } from "react-toastify";
 import { MdClose } from "react-icons/md";
@@ -16,43 +16,44 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
 
   const [thumbnailError, setThumbnailError] = useState(true);
   const [videoError, setVideoError] = useState(true);
-  const [isLoaded, setIsLoaded] = useState(false);
+
+  const videoRef = useRef(null);
 
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewVideo({ ...newVideo, [name]: value });
-
-    // Update thumbnail preview
-    if (name === "thumbnailUrl") {
-      setThumbnailError(true);
-    }
-    if (name === "videoUrl") {
-      setVideoError(true);
-    }
-
-    // error handling
-    if (name === "thumbnailUrl") {
-      const image = new Image(value);
-      image.onload = () => {
-        setIsLoaded(true);
-      };
-      image.onerror = () => {
-        setIsLoaded(true);
-      };
-      image.src = value;
-    }
   };
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (thumbnailError || !isLoaded) {
+
+    if (newVideo.title.trim().length < 5) {
+      return toast.error("Video title must be at least 5 characters long");
+    }
+
+    if (newVideo.description.trim().length < 10) {
+      return toast.error("Description must be at least 10 characters long");
+    }
+
+    if (!newVideo.thumbnailUrl.trim() || thumbnailError) {
       return toast.error("Please provide a valid thumbnail url");
     }
-    if (videoError || !isLoaded) {
+
+    if (!newVideo.videoUrl.trim() || videoError) {
       return toast.error("Please provide a valid video url");
     }
+
+    if (newVideo.category === "") {
+      return toast.error("Please select a category");
+    }
+    if (newVideo.category === "Other" && newVideo.otherCategory.trim() < 2) {
+      return toast.error(
+        "Please provide a valid category name for 'Other' category"
+      );
+    }
+
     const finalCategory =
       newVideo.category === "Other"
         ? newVideo.otherCategory
@@ -79,13 +80,27 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
   useEffect(() => {
     const image = new Image();
     image.onload = () => {
-      setIsLoaded(true);
+      setThumbnailError(false);
     };
     image.onerror = () => {
-      setIsLoaded(true);
+      setThumbnailError(true);
     };
     image.src = newVideo.thumbnailUrl;
   }, [newVideo.thumbnailUrl]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.src = newVideo.videoUrl;
+    video.onloadeddata = () => {
+      setVideoError(false);
+    };
+    video.onerror = () => {
+      setVideoError(true);
+    };
+
+    video.load();
+  }, [newVideo.videoUrl]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -98,6 +113,7 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
     onClose();
     reset();
   };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 overflow-y-auto">
       <div className="w-full max-w-md mx-auto my-8">
@@ -125,12 +141,28 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
                 <input
                   type="text"
                   value={newVideo.title}
+                  minLength={5}
+                  maxLength={50}
                   onChange={handleInputChange}
                   name="title"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                   placeholder="Enter video title..."
                   required
                 />
+                <span className="text-xs text-gray-500">
+                  {newVideo.title.length} / 50 characters
+                </span>
+
+                {newVideo.title && newVideo.title.length < 5 && (
+                  <span className="text-xs block text-red-500">
+                    Title must be at least 5 characters long
+                  </span>
+                )}
+                {newVideo.title && newVideo.title.length > 50 && (
+                  <span className="text-xs block text-red-500">
+                    Title must be less than 50 characters long
+                  </span>
+                )}
               </div>
               {/* Video Description */}
               <div className="mb-4">
@@ -140,11 +172,17 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
                 <textarea
                   value={newVideo.description}
                   onChange={handleInputChange}
+                  minLength={10}
                   name="description"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 h-24 resize-none"
                   placeholder="Enter video description..."
                   required
                 />
+                {newVideo.description && newVideo.description.length < 10 && (
+                  <span className="text-xs text-red-500">
+                    Description must be at least 10 characters long
+                  </span>
+                )}
               </div>
               {/* Video Category */}
               <div className="mb-4">
@@ -171,9 +209,16 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
                     value={newVideo.otherCategory}
                     placeholder="Enter other category"
                     onChange={handleInputChange}
+                    reqired={newVideo.category === "Other"}
                     className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                   />
                 )}
+                {newVideo.otherCategory &&
+                  newVideo.otherCategory.length < 2 && (
+                    <p className="text-red-500 text-xs">
+                      category must be at least 2 characters long
+                    </p>
+                  )}
               </div>
 
               {/* Video URL */}
@@ -186,21 +231,27 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
                   {newVideo.videoUrl && (
                     <video
                       src={newVideo.videoUrl}
+                      ref={videoRef}
                       controls
                       muted
                       onLoadedData={() => {
-                        setIsLoaded(true);
                         setVideoError(false);
                       }}
-                      onError={() => setVideoError(true)}
-                      onCanPlay={() => setIsLoaded(true)}
+                      onError={() => {
+                        setVideoError(true);
+                      }}
+                      onCanPlay={() => {
+                        setVideoError(false);
+                      }}
                       className={` ${
                         videoError ? "hidden" : ""
-                      } w-full aspect-video object-cover rounded-lg`}></video>
+                      } w-full aspect-video object-cover rounded-lg`}>
+                      <source src={newVideo.videoUrl} type="video/mp4" />
+                    </video>
                   )}
                   {videoError && (
-                    <p className="text-red-500 text-sm font-bold">
-                      Please provide a valid video url
+                    <p className="text-gray-500 text-sm font-bold">
+                      Add a video URL to preview
                     </p>
                   )}
                 </div>
@@ -213,6 +264,11 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
                   placeholder="https://example.com/video.mp4"
                   required
                 />
+                {videoError && newVideo.videoUrl && (
+                  <span className="text-red-500 text-xs">
+                    Please enter a valid video URL
+                  </span>
+                )}
               </div>
               {/* Thumbnail URL */}
 
@@ -236,8 +292,8 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
                   <p
                     className={`${
                       thumbnailError ? "" : "hidden"
-                    } text-sm text-red-500 text-center`}>
-                    Please provide a valid thumbnail url
+                    } text-sm text-gray-500 text-center`}>
+                    Add a thumbnail URL to preview
                   </p>
                 </div>
                 <input
@@ -248,6 +304,11 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                   placeholder="https://example.com/thumbnail.jpg"
                 />
+                {newVideo.thumbnailUrl && thumbnailError && (
+                  <span className="text-red-500 text-xs">
+                    Please enter a valid thumbnail URL
+                  </span>
+                )}
               </div>
 
               <div className="flex gap-3 items-center">
@@ -259,20 +320,7 @@ const UploadVideoModal = ({ onClose, onUpload }) => {
                 </button>
                 <button
                   type="submit"
-                  disabled={
-                    thumbnailError ||
-                    videoError ||
-                    !isLoaded ||
-                    !newVideo.title ||
-                    !newVideo.description ||
-                    !newVideo.category ||
-                    !newVideo.videoUrl ||
-                    !(newVideo.category === "Other"
-                      ? newVideo.otherCategory
-                      : newVideo.category)
-                  }
                   className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                  {" "}
                   Add Video
                 </button>
               </div>

@@ -39,21 +39,25 @@ const ChannelPage = () => {
   const startEditChannel = () => {
     setShowEditChannelModal(true);
   };
-  const handleUpdateChannel = async (editChannelData) => {
+  const handleUpdateChannel = async (editChannelData,reset) => {
     try {
       const response = await channelAPI.updateChannel(
         channelData.id,
         editChannelData
       );
       if (!response.success) {
+        if(response.status === 409) return toast.error("Channel name already exists");
         toast.error("Failed to update channel");
         return;
       }
       setChannelData((prev) => ({ ...prev, ...editChannelData }));
       setShowEditChannelModal(false);
       toast.success("Channel updated successfully");
+      reset();
     } catch (error) {
-      console.error("Error updating channel:", handleAPIError(error));
+      const err = handleAPIError(error);
+      if(error.response.status === 409) return toast.error(err.message || "Failed to update channel");
+      console.error("Error updating channel:", err);
     }
   };
 
@@ -171,12 +175,12 @@ const ChannelPage = () => {
     setShowEditModal(true);
   };
 
-  const handleCreateChannel = async (formData) => {
+  const handleCreateChannel = async (formData, reset) => {
     if (!isLoggedIn) return navigate("/signin");
 
     const name = formData.name || authUser?.username || "My Channel";
     const description = formData.description || `Welcome to ${name}!`;
-    const avatar = formData.avatar || authUser?.avatar || "https://via.placeholder.com/150";
+    const avatar = formData?.avatar || authUser?.avatar || "";
 
     try {
       const response = await channelAPI.createChannel({
@@ -190,9 +194,11 @@ const ChannelPage = () => {
         setShowCreateChannelModal(false);
         navigate(`/channel/${response.data.id}`, { replace: true });
         toast.success("Channel created successfully!");
+        reset();
       }
     } catch (error) {
-      toast.error("Failed to create channel");
+      const err = handleAPIError(error);
+      if(error.response.status === 409 || error.response.status === 400) return toast.error(err.message || "Failed to create channel");
       console.error("Error creating channel:", handleAPIError(error));
     }
   };
@@ -202,7 +208,7 @@ const ChannelPage = () => {
       if (
         isLoggedIn &&
         authUser &&
-        (channelId === String(authUser.id) || channelId === authUser.id)
+        (channelId === authUser.id || channelId === authUser.channelId)
       ) {
         try {
           const response = await channelAPI.getMyChannel();
@@ -214,7 +220,7 @@ const ChannelPage = () => {
             setChannelExists(false);
           }
           return;
-        } catch {
+        } catch(error) {
           setChannelExists(false);
           return;
         }

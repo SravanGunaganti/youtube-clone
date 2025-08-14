@@ -47,7 +47,10 @@ export const channelAPI = {
 
   // Get user's own channel
   getMyChannel: async () => {
-    return await API.get("/my-channel");
+  return  await API.get("/my-channel", {
+      validateStatus: () => true,
+    });    
+    
   },
 
   // Get channel by ID
@@ -199,7 +202,6 @@ export const userAPI = {
 // Error handling
 
 export const handleAPIError = (error) => {
-  console.error("API Error:", error);
 
   if (error.response) {
     return {

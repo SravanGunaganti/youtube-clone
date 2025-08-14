@@ -40,7 +40,6 @@ const ChannelInfo = ({
       }
     } catch (error) {
       console.error("Error checking subscription status:", error);
-      toast.error("Failed to check subscription status");
     } finally {
       setIsCheckingSubscription(false);
     }

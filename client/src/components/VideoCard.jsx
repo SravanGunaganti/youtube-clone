@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   formatNumber,
@@ -7,11 +7,15 @@ import {
 } from "../utils/utilityFunctions";
 import { IoCheckmarkCircleSharp } from "react-icons/io5";
 
+import logo from "../assets/youtube-logos/yt_red_black.png";
+
 const VideoCard = ({ video }) => {
   const videoRef = useRef(null);
   const [duration, setDuration] = useState(0);
   const [avatarError, setAvatarError] = useState(false);
   const [hideDuration, setHideDuration] = useState(false);
+  const [poster, setPoster] = useState("");
+  
 
   // Handle video loaded metadata
   const handleLoadedMetadata = () => {
@@ -21,26 +25,20 @@ const VideoCard = ({ video }) => {
   };
 
   // Play video on hover
-  const handleMouseOver = async () => {
+  const handleMouseOver = () => {
     if (!videoRef.current) return;
-     try {
-    videoRef.current.currentTime = 0;
-    await videoRef.current.play();
+    videoRef.current.play().catch(() => {});
     if (!hideDuration) {
       setHideDuration(true);
     }
-  } catch (error) {
-    console.error("Error playing video:", error);
-
-  }
   };
 
   // Pause video on mouse out
   const handleMouseOut = () => {
     if (!videoRef.current) return;
-
-    videoRef.current.currentTime = 0;
     videoRef.current.pause();
+    videoRef.current.currentTime = 0;
+    videoRef.current.load();
     if (hideDuration) {
       setHideDuration(false);
     }
@@ -55,6 +53,13 @@ const VideoCard = ({ video }) => {
     return `${mins}:${secs}`;
   };
 
+  useEffect(() => {
+    const img = new Image();
+    img.src = video.thumbnailUrl;
+    img.onload = () => setPoster(img.src);
+    img.onerror = () => setPoster("https://i.ytimg.com/vi/ScMzIvxBSi4/hqdefault.jpg");
+  }, [video.thumbnailUrl]);
+
   return (
     <div className="w-full mx-auto bg-white  overflow-hidden  transition-shadow duration-300">
       {/* Video inside link to watch page  */}
@@ -67,12 +72,13 @@ const VideoCard = ({ video }) => {
             muted
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}
+            poster={poster}
             onLoadedMetadata={handleLoadedMetadata}
-            poster={video.thumbnailUrl}
+            onError={(e) => e.target.src="https://filesamples.com/samples/video/mp4/sample_640x360.mp4"}
             preload="metadata"
-            src={`${video.videoUrl}`}>
+            src={video.videoUrl}>
             <source
-              src={`${video.videoUrl}`}
+              src={`${video.videoUrl}?nocache=${Date.now()}`}
               type="video/mp4"
             />
             Your browser does not support the video tag.

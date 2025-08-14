@@ -13,7 +13,7 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
     avatar: user?.avatar || "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [avatarError, setAvatarError] = useState(user?.avatar ? false : true);
+  const [avatarError, setAvatarError] = useState(false);
 
   // Update form data when user or isOpen changes
   useEffect(() => {
@@ -37,30 +37,22 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
       ...prev,
       [name]: value,
     }));
-
-    // Update avatar preview
-    if (name === "avatar") {
-      setAvatarError(true);
-    }
-
-    // Update avatar error
-    if (name === "avatar") {
-      const image = new Image(value);
-      image.onload = () => {
-        
-        setAvatarError(false);
-      };
-      image.onerror = () => {
-        setAvatarError(true);
-      };
-      image.src = value;
-    }
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setIsLoading(true);
+    if (!formData.username.trim().length > 2) {
+      setIsLoading(false);
+      return toast.error("Username cannot be empty");
+    }
+
+    if (avatarError && !formData?.avatar.trim()) {
+      setIsLoading(false);
+      return toast.error("Please provide a valid avatar url");
+    }
 
     try {
       const response = await userAPI.updateProfile({
@@ -82,20 +74,24 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
     } finally {
       setIsLoading(false);
     }
-  };  
+  };
 
-  useEffect(()=>{
-    const image = new Image(formData?.avatar);
+  useEffect(() => {
+    const image = new Image();
+    image.src = formData?.avatar;
     image.onload = () => {
       setAvatarError(false);
     };
     image.onerror = () => {
       setAvatarError(true);
     };
-    image.src = formData?.avatar;
-  },[formData?.avatar])
+  }, [formData?.avatar]);
 
   if (!isOpen) return null;
+
+  const isDisabled =
+    isLoading ||
+    (user.username === formData.username && user.avatar === formData.avatar);
 
   return (
     <div className="fixed inset-0  bg-black/50 flex items-center justify-center z-50">
@@ -119,13 +115,13 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
             {/* Avatar Section */}
             <div className="flex flex-col items-center mb-6">
               <div className="relative mb-4">
-                {formData?.avatar && !avatarError  ? (
+                {formData?.avatar && !avatarError ? (
                   <img
                     src={formData.avatar}
                     alt="Profile preview"
                     className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
-                    onError={()=>setAvatarError(true)}
-                    onLoad={()=>setAvatarError(false)}
+                    onError={() => setAvatarError(true)}
+                    onLoad={() => setAvatarError(false)}
                   />
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center font-bold text-white text-2xl border-4 border-gray-200">
@@ -155,9 +151,9 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                 placeholder="https://example.com/avatar.jpg"
               />
-               <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 {avatarError && formData.avatar ? (
-                  <span className="text-red-500">Invalid image URL</span>
+                  <span className="text-red-500">Please provide a valid URL</span>
                 ) : (
                   "Enter a URL for your profile picture (optional)"
                 )}
@@ -215,7 +211,7 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
               <button
                 type="submit"
                 className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isLoading || !formData.username.trim() || (formData.avatar && avatarError)} >
+                disabled={isDisabled}>
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

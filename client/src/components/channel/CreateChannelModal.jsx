@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getInitial } from "../../utils/utilityFunctions";
 import { AiOutlineCamera } from "react-icons/ai";
 import { MdClose } from "react-icons/md";
+import { toast } from "react-toastify";
 
 const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
   const [channelData, setChannelData] = useState({
@@ -9,9 +10,7 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
     description: `Welcome to ${authUser?.username || "My"}'s channel!`,
     avatar: authUser?.avatar || "",
   });
-  const [avatarError, setAvatarError] = useState(
-    authUser?.avatar ? false : true
-  );
+  const [avatarError, setAvatarError] = useState(false);
 
   const [isLoaded, setIsLoaded] = useState(true);
 
@@ -40,24 +39,25 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
     e.preventDefault();
     if (avatarError) {
       toast.error("Please provide a valid profile picture url");
+      return;
     }
-    onSubmit(channelData);
-    reset();
-  };
 
-  // const handleAvatarError = () => {
-  //   setAvatarError(true);
-  // };
+
+    onSubmit(channelData, reset);
+  };
 
   useEffect(() => {
     const img = new Image();
     img.onload = () => {
       setIsLoaded(true);
+      setAvatarError(false);
     };
     img.onerror = () => {
       setIsLoaded(true);
+      setAvatarError(true);
     };
     img.src = channelData.avatar;
+    
   }, [channelData.avatar]);
 
   useEffect(() => {
@@ -111,7 +111,7 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
                   )}{" "}
                   <div
                     className={`${
-                      avatarError ? "" : "hidden"
+                       !channelData?.avatar || avatarError ? "" : "hidden"
                     } w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center font-bold text-white text-2xl border-4 border-gray-200`}>
                     {getInitial(channelData.name)}
                   </div>
@@ -204,10 +204,10 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
                     !channelData.name ||
                     !channelData.description ||
                     !isLoaded ||
-                    avatarError
+                    (channelData.avatar && avatarError)
                   }
                   className="disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
-                  Create
+                  Create Channel
                 </button>
               </div>
             </form>
