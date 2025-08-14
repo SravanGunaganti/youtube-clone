@@ -30,9 +30,8 @@ API.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      console.log(error)
       removeToken();
-      // window.location.href = "/signin";
+      window.location.href = "/signin";
     }
     return Promise.reject(error);
   }
@@ -87,7 +86,7 @@ export const channelAPI = {
   // Check subscription status for current user
   getSubscriptionStatus: async (channelId) => {
     return await API.get(`/channels/${channelId}/subscription-status`);
-  }
+  },
 };
 
 //  VIDEO APIs

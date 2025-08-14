@@ -5,6 +5,15 @@
 
 A full-featured YouTube clone built with the MERN (MongoDB, Express.js, React, Node.js) stack, featuring user authentication, video management, and channel functionality.
 
+## Git URL
+ 
+[https://github.com/SravanGunaganti/youtube-clone](https://github.com/SravanGunaganti/youtube-clone)
+
+
+## Demo Link
+
+[Demo video Link ](https://drive.google.com/file/d/1v7ytaaqLAi0Ok5_j_gs2l-MZ9Bmnm1CY/view?usp=sharing)
+
 ## 🚀 Features
 
 ### User Authentication

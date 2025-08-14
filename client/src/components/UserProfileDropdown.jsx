@@ -10,7 +10,6 @@ const UserProfileDropdown = ({
   onEditProfile,
   avatarError,
 }) => {
-  console.log("avatar", avatarError);
   if (!user) return null;
   return (
     <div className="absolute right-4 top-16 w-72 bg-white shadow-lg rounded-xl border border-gray-200 z-50 overflow-hidden">

@@ -3,7 +3,7 @@ import FilterButtons from "./FilterButtons";
 import VideoGrid from "./VideoGrid";
 import { NavContext } from "../App.jsx";
 import { useAuth } from "../context/AuthContext";
-import { videoAPI } from "../services/api";
+import { videoAPI , handleAPIError} from "../services/api";
 import useActivePath from "../helpers/useActivePath.js";
 import { BiRefresh } from "react-icons/bi";
 import { toast } from "react-toastify";

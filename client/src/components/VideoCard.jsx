@@ -23,7 +23,7 @@ const VideoCard = ({ video }) => {
   // Play video on hover
   const handleMouseOver = () => {
     if (!videoRef.current) return;
-    videoRef.current.play();
+    videoRef.current.play().catch(() => {});
     if (!hideDuration) {
       setHideDuration(true);
     }

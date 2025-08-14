@@ -665,10 +665,8 @@ const VideoPlayer = () => {
                         <FaBell size={14} />
                         <span>Subscribed</span>
                       </div>
-                    ) : authUser ? (
-                      "Subscribe"
                     ) : (
-                      "Sign in to Subscribe"
+                      "Subscribe"
                     )}
                   </button>
                 </div>
