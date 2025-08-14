@@ -155,8 +155,12 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                 placeholder="https://example.com/avatar.jpg"
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Enter a URL for your profile picture
+               <p className="text-xs text-gray-500 mt-1">
+                {avatarError && formData.avatar ? (
+                  <span className="text-red-500">Invalid image URL</span>
+                ) : (
+                  "Enter a URL for your profile picture (optional)"
+                )}
               </p>
             </div>
 
@@ -211,7 +215,7 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
               <button
                 type="submit"
                 className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isLoading || !formData.username.trim()}>
+                disabled={isLoading || !formData.username.trim() || (formData.avatar && avatarError)} >
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

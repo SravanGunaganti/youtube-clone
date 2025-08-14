@@ -155,7 +155,7 @@ export const updateProfile = async (req, res, next) => {
       userId,
       {
         username: username.trim(),
-        avatar: avatar ? avatar.trim() : undefined,
+        avatar: avatar ? avatar.trim() : null,
       },
       { new: true, runValidators: true }
     );
