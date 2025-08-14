@@ -21,20 +21,26 @@ const VideoCard = ({ video }) => {
   };
 
   // Play video on hover
-  const handleMouseOver = () => {
+  const handleMouseOver = async () => {
     if (!videoRef.current) return;
-    videoRef.current.play().catch(() => {});
+     try {
+    videoRef.current.currentTime = 0;
+    await videoRef.current.play();
     if (!hideDuration) {
       setHideDuration(true);
     }
+  } catch (error) {
+    console.error("Error playing video:", error);
+
+  }
   };
 
   // Pause video on mouse out
   const handleMouseOut = () => {
     if (!videoRef.current) return;
-    videoRef.current.pause();
+
     videoRef.current.currentTime = 0;
-    videoRef.current.load();
+    videoRef.current.pause();
     if (hideDuration) {
       setHideDuration(false);
     }
@@ -64,9 +70,9 @@ const VideoCard = ({ video }) => {
             onLoadedMetadata={handleLoadedMetadata}
             poster={video.thumbnailUrl}
             preload="metadata"
-            src={video.videoUrl}>
+            src={`${video.videoUrl}`}>
             <source
-              src={`${video.videoUrl}?nocache=${Date.now()}`}
+              src={`${video.videoUrl}`}
               type="video/mp4"
             />
             Your browser does not support the video tag.

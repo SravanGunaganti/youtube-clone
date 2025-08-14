@@ -19,84 +19,82 @@ import { useAuth } from "./context/AuthContext.jsx";
 export default function RouterWrapper() {
   const { authUser } = useAuth();
   const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <RootErrorBoundary />,
-    children: [
-      {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: "/signup",
-        element: (
-          <Suspense fallback={<Loader size="lg" />}>
-            <SignUp />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/signin",
-        element: (
-          <Suspense fallback={<Loader size="lg" />}>
-            <SignIn />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/watch/:videoId",
-        element: (
-          <Suspense fallback={<Loader size="lg" />}>
-            <VideoPlayer />
-          </Suspense>
-        ),
-        errorElement: <VideoNotFound />,
-        loader: async ({ params }) => {
-          try {
-            await API.get(`/videos/${params.videoId}/exist`);
-            return null;
-          } catch (error) {
-            throw new Response(null, { status: 404 });
-          }
+    {
+      path: "/",
+      element: <App />,
+      errorElement: <RootErrorBoundary />,
+      children: [
+        {
+          index: true,
+          element: <Home />,
         },
-      },
-      {
-        path: "/channel/:channelId",
-        element: <ChannelPage />,
-        errorElement: <ChannelNotFound />,
-        loader: async ({ params }) => {
-          try {
-
-            if (authUser?.id === params.channelId) {
+        {
+          path: "/signup",
+          element: (
+            <Suspense fallback={<Loader size="lg" />}>
+              <SignUp />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/signin",
+          element: (
+            <Suspense fallback={<Loader size="lg" />}>
+              <SignIn />
+            </Suspense>
+          ),
+        },
+        {
+          path: "/watch/:videoId",
+          element: (
+            <Suspense fallback={<Loader size="lg" />}>
+              <VideoPlayer />
+            </Suspense>
+          ),
+          errorElement: <VideoNotFound />,
+          loader: async ({ params }) => {
+            try {
+              await API.get(`/videos/${params.videoId}/exist`);
               return null;
+            } catch (error) {
+              throw new Response(null, { status: 404 });
             }
-            await API.get(`/channels/${params.channelId}/exist`);
-            return null;
-          } catch (error) {
-            throw new Response(null, { status: error?.response?.data.statusCode });
-          }
+          },
         },
-      },
-      {
-        path:"/loader",
-        element: <Loader size="lg" />
+        {
+          path: "/channel/:channelId",
 
-      },
-      {
-        path: "*",
-        element: (
-          <Suspense fallback={<Loader size="lg" />}>
-            <PageNotFound />
-          </Suspense>
-        ),
-      },
-    ],
-  },
-]);
+          element: (
+            <Suspense fallback={<Loader size="lg" />}>
+              <ChannelPage />
+            </Suspense>
+          ),
+          errorElement: <ChannelNotFound />,
+          loader: async ({ params }) => {
+            try {
+              if (authUser?.id === params.channelId) {
+                return null;
+              }
+              await API.get(`/channels/${params.channelId}/exist`);
+              return null;
+            } catch (error) {
+              throw new Response(null, {
+                status: error?.response?.data.statusCode,
+              });
+            }
+          },
+        },
+        {
+          path: "*",
+          element: (
+            <Suspense fallback={<Loader size="lg" />}>
+              <PageNotFound />
+            </Suspense>
+          ),
+        },
+      ],
+    },
+  ]);
 
-  return <RouterProvider router={router} />;
+  return <RouterProvider router={router} fallbackElement={<Loader />} />;
 }
-
-
-
