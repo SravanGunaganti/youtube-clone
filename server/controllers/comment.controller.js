@@ -1,5 +1,4 @@
 // import models
-import { use } from "react";
 import Comment from "../models/Comment.model.js";
 import Video from "../models/Video.model.js";
 
