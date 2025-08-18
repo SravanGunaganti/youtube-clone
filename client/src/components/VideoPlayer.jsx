@@ -86,7 +86,7 @@ const VideoPlayer = () => {
   const [showDescription, setShowDescription] = useState(false);
   const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false);
   const [deleteCommentId, setDeleteCommentId] = useState(null);
-  const [poster, setPoster] = useState("");
+  const [poster, setPoster] = useState("https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/A_black_image.jpg/1200px-A_black_image.jpg?20201103073518");
   useEffect(() => {
     if(!videoData.thumbnailUrl) return;
     const img = new Image();
@@ -521,10 +521,10 @@ const VideoPlayer = () => {
         {/* Main Video Section */}
         <div className="flex-1 max-w-5xl">
           {/* Video Player */}
-          <div className={`${videoData.videoUrl ? "" : "animate-pulse "} relative w-full bg-black md:rounded-xl overflow-hidden mb-3`}>
+          <div className={`relative w-full bg-black aspect-video md:rounded-xl overflow-hidden mb-3`}>
             <video
               ref={videoRef}
-              className="w-full aspect-video"
+              className="w-full aspect-video object-cover"
               controls={false}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
