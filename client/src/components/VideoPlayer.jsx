@@ -86,10 +86,9 @@ const VideoPlayer = () => {
   const [showDescription, setShowDescription] = useState(false);
   const [showDeleteCommentModal, setShowDeleteCommentModal] = useState(false);
   const [deleteCommentId, setDeleteCommentId] = useState(null);
-  const [poster, setPoster] = useState(
-    "https://i.ytimg.com/vi/ScMzIvxBSi4/hqdefault.jpg"
-  );
+  const [poster, setPoster] = useState("");
   useEffect(() => {
+    if(!videoData.thumbnailUrl) return;
     const img = new Image();
     img.src = videoData.thumbnailUrl;
     img.onload = () => setPoster(img.src);
@@ -166,6 +165,7 @@ const VideoPlayer = () => {
 
       if (response.success) {
         setVideoData(response.data);
+        setPoster(response.data.thumbnailUrl);
         setVideoLikeStatus({
           likes: response.data.likes || 0,
           dislikes: response.data.dislikes || 0,
@@ -521,7 +521,7 @@ const VideoPlayer = () => {
         {/* Main Video Section */}
         <div className="flex-1 max-w-5xl">
           {/* Video Player */}
-          <div className="relative w-full bg-black md:rounded-xl overflow-hidden mb-3">
+          <div className={`${videoData.videoUrl ? "" : "animate-pulse "} relative w-full bg-black md:rounded-xl overflow-hidden mb-3`}>
             <video
               ref={videoRef}
               className="w-full aspect-video"
@@ -533,7 +533,7 @@ const VideoPlayer = () => {
               onClick={togglePlay}
               poster={poster}
               onError={(e) =>
-                (e.target.src = `https://filesamples.com/samples/video/mp4/sample_640x360.mp4`)
+                {videoData.videoUrl && (e.target.src = `https://filesamples.com/samples/video/mp4/sample_640x360.mp4`);}
               }
               preload="metadata"
               src={`${videoData.videoUrl}`}>
@@ -793,7 +793,7 @@ const VideoPlayer = () => {
             </div>
 
             {/* Add Comment */}
-            <div className="mb-8">
+            {authUser && <div className="mb-8">
               <div className="flex gap-3">
                 {authUser?.avatar && !authAvatarError ? (
                   <img
@@ -834,7 +834,7 @@ const VideoPlayer = () => {
                   </form>
                 </div>
               </div>
-            </div>
+            </div>}
 
             {/* Comments List */}
             <div className="space-y-6">

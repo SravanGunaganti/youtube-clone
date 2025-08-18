@@ -30,10 +30,10 @@ const SignUp = () => {
       });
 
       if (res.success) {
-        toast.success(res.message || "Registered successfully!");
+        toast.success(res?.message || "Registered successfully!");
         navigate("/signin");
       } else {
-        toast.error(res?.data.error?.message || "Registration failed.");
+        toast.error(res?.data?.error?.message || "Registration failed.");
       }
     } catch (error) {
       handleAPIError(error);
@@ -66,7 +66,7 @@ const SignUp = () => {
             <input
               type="email"
               placeholder="Enter email"
-              autocomplete="username"
+              autoComplete="username"
               className="w-full bg-white border border-gray-300 rounded-lg p-2 outline-0"
               {...register("email", {
                 required: "Email is required",

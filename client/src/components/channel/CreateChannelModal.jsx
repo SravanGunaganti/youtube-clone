@@ -37,11 +37,10 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (avatarError) {
+    if (channelData.avatar && avatarError) {
       toast.error("Please provide a valid profile picture url");
       return;
     }
-
 
     onSubmit(channelData, reset);
   };
@@ -57,7 +56,6 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
       setAvatarError(true);
     };
     img.src = channelData.avatar;
-    
   }, [channelData.avatar]);
 
   useEffect(() => {
@@ -111,7 +109,7 @@ const CreateChannelModal = ({ authUser, onClose, onSubmit }) => {
                   )}{" "}
                   <div
                     className={`${
-                       !channelData?.avatar || avatarError ? "" : "hidden"
+                      !channelData?.avatar || avatarError ? "" : "hidden"
                     } w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center font-bold text-white text-2xl border-4 border-gray-200`}>
                     {getInitial(channelData.name)}
                   </div>

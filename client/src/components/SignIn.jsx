@@ -22,13 +22,13 @@ const SignIn = () => {
 
       if (res.success) {
         login(res);
-        toast.success(res.message || "Login successfully!");
+        toast.success(res?.message || "Login successfully!");
         navigate(`/`);
       } else {
-        toast.error(res?.data.error?.message || "Login failed. Try again!");
+        toast.error(res?.data?.error?.message || "Login failed. Try again!");
       }
     } catch (e) {
-      toast.error(handleAPIError(e).message || "Login failed Try again!");
+      toast.error(handleAPIError(e)?.message || "Login failed Try again!");
     }
   };
 

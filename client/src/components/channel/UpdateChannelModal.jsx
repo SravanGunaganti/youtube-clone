@@ -97,8 +97,8 @@ const UpdateChannelModal = ({ channelData, onClose, onSubmit }) => {
   const isDisabled =
     channelData.channelName === editChannelData.channelName &&
     channelData.description === editChannelData.description &&
-    editChannelData.avatar === channelData.avatar &&
-    editChannelData.channelBanner === channelData.channelBanner;
+    (channelData.avatar ||"") === editChannelData.avatar &&
+    (channelData.channelBanner||"") === editChannelData.channelBanner;
   return (
     <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 overflow-y-auto">
       <div className="w-full max-w-md mx-auto my-8">

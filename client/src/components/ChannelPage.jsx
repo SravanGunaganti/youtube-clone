@@ -56,7 +56,7 @@ const ChannelPage = () => {
       reset();
     } catch (error) {
       const err = handleAPIError(error);
-      if(error.response.status === 409) return toast.error(err.message || "Failed to update channel");
+      if(error?.response?.status === 409) return toast.error(err?.message || "Failed to update channel");
       console.error("Error updating channel:", err);
     }
   };
@@ -198,7 +198,7 @@ const ChannelPage = () => {
       }
     } catch (error) {
       const err = handleAPIError(error);
-      if(error.response.status === 409 || error.response.status === 400) return toast.error(err.message || "Failed to create channel");
+      if(error?.response?.status === 409 || error?.response?.status === 400) return toast.error(err?.message || "Failed to create channel");
       console.error("Error creating channel:", handleAPIError(error));
     }
   };

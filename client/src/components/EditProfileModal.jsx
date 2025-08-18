@@ -66,7 +66,7 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
         toast.success("Profile updated successfully!");
         onClose();
       } else {
-        toast.error(response.message || "Failed to update profile");
+        toast.error(response?.message || "Failed to update profile");
       }
     } catch (error) {
       console.error("Error updating profile:", handleAPIError(error));

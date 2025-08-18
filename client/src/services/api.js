@@ -203,21 +203,21 @@ export const userAPI = {
 
 export const handleAPIError = (error) => {
 
-  if (error.response) {
+  if (error?.response) {
     return {
-      title: error.response.data.error.title || "Error",
+      title: error?.response?.data?.error?.title || "Error",
       message:
-        error.response.data.error.message || "An unexpected error occurred",
+        error?.response?.data?.error?.message || "An unexpected error occurred",
     };
-  } else if (error.request) {
+  } else if (error?.request) {
     return {
       title: "Network Error",
       message: "Unable to connect to the server. Please try again.",
     };
-  } else if (error.error) {
+  } else if (error?.error) {
     return {
-      title: error.error.title || "Error",
-      message: error.error.message || "An unexpected error occurred",
+      title: error?.error?.title || "Error",
+      message: error?.error?.message || "An unexpected error occurred",
     };
   }
 

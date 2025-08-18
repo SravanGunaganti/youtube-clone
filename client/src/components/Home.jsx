@@ -46,7 +46,7 @@ export default function Home() {
       setLoading(false);
       setError(null);
     } catch (error) {
-      toast.error(handleAPIError(error).message);
+      toast.error(handleAPIError(error)?.message || "Failed to load videos");
       setError("Failed to load videos");
       setLoading(false);
       console.error("Error fetching videos:", handleAPIError(error));
