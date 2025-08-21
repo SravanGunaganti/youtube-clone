@@ -33,7 +33,7 @@ const SignUp = () => {
         toast.success(res?.message || "Registered successfully!");
         navigate("/signin");
       } else {
-        toast.error(res?.data?.error?.message || "Registration failed.");
+        return toast.error(res?.data?.error?.message || "Registration failed.");
       }
     } catch (error) {
       handleAPIError(error);
