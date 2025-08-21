@@ -49,7 +49,7 @@ const EditProfileModal = ({ isOpen, onClose, user }) => {
       return toast.error("Username cannot be empty");
     }
 
-    if (avatarError && !formData?.avatar.trim()) {
+    if (avatarError && formData?.avatar.trim()) {
       setIsLoading(false);
       return toast.error("Please provide a valid avatar url");
     }
