@@ -16,7 +16,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5050;
 app.use(cors({
-    origin: ["https://youtube-clone-smoky-eta.vercel.app/","https://youtube-clone-j8ngx8t88-sravangunagantis-projects.vercel.app/","https://youtube-clone-git-main-sravangunagantis-projects.vercel.app/", "http://localhost:3000", "http://localhost:5173"],
+    origin: ["https://youtube-clone-smoky-eta.vercel.app","https://youtube-clone-smoky-eta.vercel.app/","https://youtube-clone-j8ngx8t88-sravangunagantis-projects.vercel.app","https://youtube-clone-git-main-sravangunagantis-projects.vercel.app", "http://localhost:3000", "http://localhost:5173"],
     credentials: true,
   }));
 app.use(express.json());
